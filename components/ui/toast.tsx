@@ -50,10 +50,10 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
 // ─── Item ────────────────────────────────────────────────────────────────────
 const toastConfig = {
-  success: { icon: CheckCircle, bg: 'bg-emerald-50 border-emerald-200', text: 'text-emerald-800', icon: CheckCircle, iconColor: 'text-emerald-500' },
-  error:   { icon: XCircle,     bg: 'bg-red-50 border-red-200',         text: 'text-red-800',     iconColor: 'text-red-500'     },
-  warning: { icon: AlertCircle, bg: 'bg-amber-50 border-amber-200',     text: 'text-amber-800',   iconColor: 'text-amber-500'   },
-  info:    { icon: Info,        bg: 'bg-indigo-50 border-indigo-200',   text: 'text-indigo-800',  iconColor: 'text-indigo-500'  },
+  success: { icon: CheckCircle, bg: 'bg-emerald-50 border-emerald-200', text: 'text-emerald-800', iconColor: 'text-emerald-500' },
+  error: { icon: XCircle, bg: 'bg-red-50 border-red-200', text: 'text-red-800', iconColor: 'text-red-500' },
+  warning: { icon: AlertCircle, bg: 'bg-amber-50 border-amber-200', text: 'text-amber-800', iconColor: 'text-amber-500' },
+  info: { icon: Info, bg: 'bg-indigo-50 border-indigo-200', text: 'text-indigo-800', iconColor: 'text-indigo-500' },
 } as const;
 
 function ToastItem({ toast, onRemove }: { toast: ToastMessage; onRemove: (id: string) => void }) {

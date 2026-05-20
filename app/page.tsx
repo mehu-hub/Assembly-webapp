@@ -1,10 +1,15 @@
+'use client';
+
 import * as React from 'react';
 import Link from 'next/link';
 import { Package, Cpu, Archive, Wrench, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
+import { useAuth } from '@/lib/auth-context';
+
 export default function WelcomePage() {
+  const { user } = useAuth();
   const features = [
     { icon: Package, title: 'Product Management', desc: 'Define complex product structures and manage product catalogs seamlessly.' },
     { icon: Cpu, title: 'Component Tracking', desc: 'Real-time tracking of individual components across your workshop and storage.' },
@@ -63,65 +68,27 @@ export default function WelcomePage() {
           </div>
         </section>
 
-        {/* Additional Feature Spotlight Section */}
-        <section className="py-16 mt-12 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center px-6">
-          <div className="space-y-6">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
-              <CheckCircle2 size={12} className="text-indigo-600" />
-              <span>Production Optimization</span>
-            </div>
-            <h2 className="text-3.5xl font-bold tracking-tight text-slate-900 leading-tight">
-              Optimize your warehouse and assembly workflows in one view
-            </h2>
-            <p className="text-slate-600 leading-relaxed">
-              Track manufacturing pipelines, resolve component bottlenecks before they occur, and analyze cost margins instantly with our smart bill-of-materials calculator.
-            </p>
-            <ul className="space-y-3">
-              {[
-                "Automatic component depletion tracking during assembly runs",
-                "Detailed pricing calculations and margins per product configuration",
-                "Advanced notifications when components drop below buffer stock levels"
-              ].map((item, idx) => (
-                <li key={idx} className="flex items-start gap-2.5 text-sm text-slate-600">
-                  <CheckCircle2 size={16} className="text-emerald-500 mt-0.5 flex-shrink-0" />
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="relative rounded-2xl border border-slate-200/60 bg-white/70 p-8 shadow-md backdrop-blur-sm overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
-            <h4 className="text-sm font-semibold text-slate-900 mb-4 flex items-center gap-2">
-              <Wrench size={16} className="text-indigo-600" />
-              Assembly Calculator Preview
-            </h4>
-            <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-2">
-                <div className="flex justify-between text-xs text-slate-400">
-                  <span>Selected Product</span>
-                  <span>Assemblable Qty</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm font-semibold text-slate-800">Advanced IoT Module</span>
-                  <span className="text-sm font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-100">42 Units</span>
-                </div>
+        {/* Conditional Logged In Welcome Section */}
+        {user && (
+          <section className="py-12 mt-12 bg-white/60 border border-slate-200/50 rounded-3xl p-8 backdrop-blur-sm shadow-sm">
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">Welcome Back, {user.name}!</h2>
+            <p className="text-slate-500 mb-6 text-sm">Quick actions and shortcuts to manage your assembly workspace:</p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="p-4 rounded-xl border border-slate-100 bg-white shadow-sm hover:shadow transition-shadow">
+                <h4 className="text-sm font-semibold text-slate-800 mb-1">Add Components</h4>
+                <p className="text-xs text-slate-400">Manage workshop and storage inventory</p>
               </div>
-              <div className="space-y-2">
-                <span className="text-xs font-medium text-slate-500">Component Requirements:</span>
-                {[
-                  { name: "Microprocessor v2", req: "1x", stock: "87 in stock", ok: true },
-                  { name: "Bluetooth Transceiver", req: "1x", stock: "45 in stock", ok: true },
-                  { name: "LED Status Ring", req: "2x", stock: "112 in stock", ok: true }
-                ].map((comp, idx) => (
-                  <div key={idx} className="flex justify-between items-center text-xs p-2.5 rounded-lg bg-white border border-slate-100 shadow-sm">
-                    <span className="text-slate-700">{comp.name} <span className="text-slate-400">({comp.req})</span></span>
-                    <span className="text-[10px] font-semibold text-slate-500">{comp.stock}</span>
-                  </div>
-                ))}
+              <div className="p-4 rounded-xl border border-slate-100 bg-white shadow-sm hover:shadow transition-shadow">
+                <h4 className="text-sm font-semibold text-slate-800 mb-1">Run Calculations</h4>
+                <p className="text-xs text-slate-400">Calculate assemblable product quotas</p>
+              </div>
+              <div className="p-4 rounded-xl border border-slate-100 bg-white shadow-sm hover:shadow transition-shadow">
+                <h4 className="text-sm font-semibold text-slate-800 mb-1">Check Reports</h4>
+                <p className="text-xs text-slate-400">Generate BOM and pricing sheets</p>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </div>
   );
 }

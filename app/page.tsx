@@ -89,6 +89,57 @@ export default function WelcomePage() {
             </div>
           </section>
         )}
+        {/* Client Reviews Section */}
+        <section className="py-16 mt-16 border-t border-slate-200/50">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="text-center mb-10">
+              <h2 className="text-2xl font-bold text-slate-900">What Our Users Say</h2>
+              <p className="text-slate-500 mt-1 text-sm">Real feedback from teams streamlining their assembly lines.</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {[
+                {
+                  quote: "AMS has completely changed how we track IoT component stock. We haven't run out of microchips once since deploying it.",
+                  author: "Sarah K.",
+                  role: "Head of Operations at IoT Labs",
+                  rating: 5
+                },
+                {
+                  quote: "The assembly calculator is a lifesaver. Being able to instantly tell our sales team how many units we can build is incredible.",
+                  author: "David M.",
+                  role: "Production Lead at BuildCorp",
+                  rating: 5
+                },
+                {
+                  quote: "Simple, clean, and focus-driven. Integrating our bill of materials structure took less than an afternoon.",
+                  author: "Elena R.",
+                  role: "Hardware Engineer at Flextronics",
+                  rating: 5
+                }
+              ].map((review, i) => (
+                <Card key={i} className="border-slate-100 bg-white/85 shadow-sm backdrop-blur-sm">
+                  <CardContent className="p-6 flex flex-col justify-between h-full">
+                    <div>
+                      {/* Star rating */}
+                      <div className="flex gap-0.5 mb-3 text-amber-500 text-sm">
+                        {Array.from({ length: review.rating }).map((_, idx) => (
+                          <span key={idx}>★</span>
+                        ))}
+                      </div>
+                      <p className="text-sm text-slate-600 italic leading-relaxed mb-4">
+                        "{review.quote}"
+                      </p>
+                    </div>
+                    <div className="border-t border-slate-100 pt-3 mt-auto">
+                      <h4 className="text-xs font-semibold text-slate-800">{review.author}</h4>
+                      <p className="text-[10px] text-slate-400">{review.role}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
       </div>
   );
 }

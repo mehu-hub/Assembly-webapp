@@ -3,34 +3,34 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bell, ChevronRight, Search, User } from 'lucide-react';
+import { Bell, Home, ChevronRight, Cpu, Search } from 'lucide-react';
 import { MobileMenuButton } from './sidebar';
 import { useAuth } from '@/lib/auth-context';
 
-// ─── Breadcrumb logic ─────────────────────────────────────────────────────────
+// ─── Route labels ─────────────────────────────────────────────────────────────
 const routeLabels: Record<string, string> = {
   '':           'Home',
+  'dashboard':  'Dashboard',
   'products':   'Products',
-  'structure':  'Product Structure',
-  'assembly':   'Product Assembly',
+  'structure':  'Structure',
+  'assembly':   'Assembly',
   'components': 'Components',
   'workshop':   'Workshop',
   'storage':    'Storage',
   'inventory':  'Inventory',
   'stock':      'Stock',
-  'quantities': 'Stock Quantities',
-  'prices':     'Component Prices',
-  'required':   'Required Components',
-  'possible':   'Products Assemblable',
-  'calculator': 'Assembly Calculator',
+  'quantities': 'Quantities',
+  'prices':     'Prices',
+  'required':   'Required',
+  'possible':   'Assemblable',
+  'calculator': 'Calculator',
   'reports':    'Reports',
 };
 
 function useBreadcrumbs() {
   const pathname = usePathname();
   const segments = pathname.split('/').filter(Boolean);
-
-  const crumbs = [{ label: 'Home', href: '/' }];
+  const crumbs: { label: string; href: string }[] = [];
   let path = '';
   for (const seg of segments) {
     path += `/${seg}`;
@@ -59,25 +59,57 @@ export function Header({ onMobileMenuOpen }: HeaderProps) {
 
   return (
     <header
-      className="sticky top-0 z-30 flex items-center gap-4 px-6 h-16 bg-white/90 border-b border-slate-200 backdrop-blur-md"
+      className="sticky top-0 z-30 flex items-center gap-3 px-4 sm:px-6 h-16 bg-white/95 border-b border-slate-200 backdrop-blur-md"
       style={{ boxShadow: '0 1px 4px 0 rgb(0 0 0 / 0.05)' }}
     >
       {/* Mobile menu trigger */}
       <MobileMenuButton onClick={onMobileMenuOpen} />
 
-      {/* Page title + breadcrumb */}
+      {/* Brand — mobile only (desktop uses sidebar logo) */}
+      <Link
+        href="/"
+        className="lg:hidden flex items-center gap-2 flex-shrink-0"
+        aria-label="Home"
+      >
+        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-sm">
+          <Cpu size={15} className="text-white" />
+        </div>
+        <span className="hidden sm:block text-sm font-bold text-slate-800">
+          PC <span className="text-indigo-600">Assembly</span>
+        </span>
+      </Link>
+
+      {/* Page title — fills remaining space */}
       <div className="flex-1 min-w-0">
-        <h1 className="text-base font-bold text-slate-900 truncate leading-tight">{pageTitle}</h1>
-        <nav aria-label="Breadcrumb" className="flex items-center gap-1 mt-0.5">
+        <h1 className="text-sm font-bold text-slate-900 truncate">{pageTitle}</h1>
+      </div>
+
+      {/* ── Right side: Breadcrumb + divider + actions ── */}
+      <div className="flex items-center gap-3 flex-shrink-0">
+
+        {/* Breadcrumb with home icon */}
+        <nav
+          aria-label="Breadcrumb"
+          className="hidden md:flex items-center gap-1.5 text-sm"
+        >
+          {/* Home icon link */}
+          <Link
+            href="/"
+            className="flex items-center justify-center w-7 h-7 rounded-md text-indigo-600 hover:bg-indigo-50 transition-colors"
+            aria-label="Home"
+          >
+            <Home size={15} />
+          </Link>
+
           {crumbs.map((crumb, i) => (
             <React.Fragment key={crumb.href}>
-              {i > 0 && <ChevronRight size={12} className="text-slate-300 flex-shrink-0" />}
+              <span className="text-slate-300 select-none">/</span>
               {i === crumbs.length - 1 ? (
-                <span className="text-xs text-slate-500 truncate">{crumb.label}</span>
+                <span className="text-slate-400 text-sm font-medium px-1">{crumb.label}</span>
               ) : (
                 <Link
                   href={crumb.href}
-                  className="text-xs text-indigo-600 hover:text-indigo-700 hover:underline truncate"
+                  className="text-slate-600 hover:text-indigo-600 font-medium px-1 transition-colors"
                 >
                   {crumb.label}
                 </Link>
@@ -85,49 +117,46 @@ export function Header({ onMobileMenuOpen }: HeaderProps) {
             </React.Fragment>
           ))}
         </nav>
-      </div>
 
-      {/* Right actions */}
-      <div className="flex items-center gap-3">
+        {/* Divider */}
+        <div className="hidden md:block w-px h-5 bg-slate-200" />
+
+        {/* Auth / User actions */}
         {user ? (
           <>
-            {/* Search */}
-            <button
-              className="hidden sm:flex items-center gap-2 h-9 px-3 rounded-lg border border-slate-200 bg-slate-50 text-sm text-slate-400 hover:bg-white hover:border-slate-300 transition-colors w-48"
-              aria-label="Search"
-            >
-              <Search size={14} />
-              <span>Search...</span>
-              <kbd className="ml-auto text-[10px] font-mono bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded">⌘K</kbd>
-            </button>
-
             {/* Notifications */}
             <button
-              className="relative p-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
+              className="relative p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
               aria-label="Notifications"
             >
-              <Bell size={18} />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-500 ring-2 ring-white" />
+              <Bell size={17} />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-red-500 ring-2 ring-white" />
             </button>
 
             {/* User avatar */}
             <button
-              className="flex items-center gap-2 h-9 px-2 rounded-lg hover:bg-slate-100 transition-colors"
+              className="flex items-center gap-2 h-8 px-1 rounded-lg hover:bg-slate-100 transition-colors"
               aria-label="User profile"
             >
-              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold uppercase">
+              <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold uppercase shadow-sm">
                 {user.name[0]}
               </div>
-              <span className="hidden sm:block text-sm font-medium text-slate-700">{user.name}</span>
+              <span className="hidden sm:block text-sm font-semibold text-slate-700 pr-1">{user.name}</span>
             </button>
           </>
         ) : (
           <>
-            <Link href="/auth?mode=login" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors px-3 py-2 rounded-lg hover:bg-slate-100">
-              Login
+            <Link
+              href="/auth?mode=login"
+              className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-slate-50"
+            >
+              Log in
             </Link>
-            <Link href="/auth?mode=signup" className="text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition-colors px-4 py-2 rounded-lg shadow-sm">
-              Sign Up
+            <Link
+              href="/auth?mode=signup"
+              className="text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition-all px-4 py-1.5 rounded-lg shadow-sm shadow-indigo-200 active:scale-95"
+            >
+              Get Started
             </Link>
           </>
         )}

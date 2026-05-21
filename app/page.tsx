@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Package, Cpu, Archive, Wrench, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Package, Cpu, Archive, Wrench, ArrowRight, CheckCircle2, HardDrive, Monitor, Zap, Server } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -41,6 +41,45 @@ export default function WelcomePage() {
                 Sign In to Dashboard
               </Button>
             </Link>
+          </div>
+
+          {/* Minimal Animated Tech Graphic */}
+          <div className="relative mt-20 mb-8 w-full max-w-3xl mx-auto h-48 sm:h-64 flex items-center justify-center">
+            {/* Center glowing orb */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-32 h-32 bg-indigo-500/20 rounded-full blur-3xl animate-pulse"></div>
+            </div>
+            
+            {/* Center CPU element */}
+            <div className="relative z-20 w-20 h-20 sm:w-24 sm:h-24 bg-white/90 backdrop-blur-md border border-indigo-200 rounded-2xl shadow-xl flex items-center justify-center animate-bounce" style={{ animationDuration: '4s' }}>
+              <Cpu size={40} className="text-indigo-600" />
+              <div className="absolute inset-0 border-2 border-indigo-500/30 rounded-2xl animate-ping" style={{ animationDuration: '3s' }}></div>
+            </div>
+
+            {/* Floating Components */}
+            {/* Top Left */}
+            <div className="absolute z-10 left-[10%] sm:left-[20%] top-[10%] w-12 h-12 sm:w-16 sm:h-16 bg-white border border-slate-200 rounded-xl shadow-lg flex items-center justify-center animate-bounce" style={{ animationDuration: '5s', animationDelay: '0.5s' }}>
+              <HardDrive size={24} className="text-slate-500" />
+            </div>
+            
+            {/* Top Right */}
+            <div className="absolute z-10 right-[10%] sm:right-[20%] top-[20%] w-12 h-12 sm:w-16 sm:h-16 bg-white border border-slate-200 rounded-xl shadow-lg flex items-center justify-center animate-bounce" style={{ animationDuration: '6s', animationDelay: '1s' }}>
+              <Server size={24} className="text-emerald-500" />
+            </div>
+
+            {/* Bottom Left */}
+            <div className="absolute z-10 left-[20%] sm:left-[25%] bottom-[10%] w-12 h-12 sm:w-16 sm:h-16 bg-white border border-slate-200 rounded-xl shadow-lg flex items-center justify-center animate-bounce" style={{ animationDuration: '4.5s', animationDelay: '1.5s' }}>
+              <Monitor size={24} className="text-blue-500" />
+            </div>
+
+            {/* Bottom Right */}
+            <div className="absolute z-10 right-[15%] sm:right-[25%] bottom-[15%] w-12 h-12 sm:w-16 sm:h-16 bg-white border border-slate-200 rounded-xl shadow-lg flex items-center justify-center animate-bounce" style={{ animationDuration: '5.5s', animationDelay: '2s' }}>
+              <Zap size={24} className="text-amber-500" />
+            </div>
+
+            {/* Connecting Lines (Simulated with absolute divs) */}
+            <div className="absolute top-1/2 left-[20%] right-[20%] h-px bg-gradient-to-r from-transparent via-indigo-200 to-transparent z-0"></div>
+            <div className="absolute left-1/2 top-[20%] bottom-[20%] w-px bg-gradient-to-b from-transparent via-indigo-200 to-transparent z-0"></div>
           </div>
         </section>
 

@@ -5,6 +5,7 @@ import './globals.css';
 import * as React from 'react';
 import { ToastProvider } from '@/components/ui/toast';
 import { Header } from '@/components/layout/header';
+import { Footer } from '@/components/layout/footer';
 import { AuthProvider } from '@/lib/auth-context';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -21,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ToastProvider>
             <div className="flex flex-col min-h-screen">
               <Header onMobileMenuOpen={() => {}} />
-              <main className="flex-1 relative bg-slate-50/50">
+              <main className="flex-1 relative bg-slate-50/50 flex flex-col">
                 {/* Grid pattern background */}
                 <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#e2e8f090_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f090_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
                 <div className="absolute inset-0 z-0 bg-gradient-to-tr from-indigo-100/40 via-transparent to-purple-100/40 pointer-events-none" />
@@ -29,15 +30,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <div className="absolute top-[20%] left-[20%] w-[32rem] h-[32rem] rounded-full bg-indigo-200/20 blur-3xl z-0 pointer-events-none" />
                 <div className="absolute bottom-[20%] right-[20%] w-[32rem] h-[32rem] rounded-full bg-purple-200/20 blur-3xl z-0 pointer-events-none" />
 
-                <div className="relative z-10 p-6 max-w-[1400px] mx-auto min-h-[calc(100vh-4rem)] flex flex-col">
-                  {children}
-                  {/* Footer */}
-                  <footer className="mt-auto py-6 text-center border-t border-slate-200">
-                    <p className="text-sm text-slate-500">
-                      Copyright &copy; {new Date().getFullYear()} Mehedi Hasan. All rights reserved.
-                    </p>
-                  </footer>
+                <div className="relative z-10 p-6 max-w-[1400px] mx-auto w-full flex-1 flex flex-col">
+                  <div className="flex-1 flex flex-col">
+                    {children}
+                  </div>
                 </div>
+                <Footer />
               </main>
             </div>
           </ToastProvider>

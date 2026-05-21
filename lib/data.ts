@@ -137,5 +137,6 @@ export function deleteComponent(id: string) { components = components.filter(c =
 export function addBOMEntry(b: BOMEntry) { bomEntries = [...bomEntries, b]; }
 export function updateBOMEntry(b: BOMEntry) { bomEntries = bomEntries.map(x => x.id === b.id ? b : x); }
 export function deleteBOMEntry(id: string) { bomEntries = bomEntries.filter(b => b.id !== id); }
+export function deleteBOMEntriesForProduct(productId: string) { bomEntries = bomEntries.filter(b => b.productId !== productId); }
 
 export function updateInventory(inv: InventoryEntry) { inventory = inventory.map(x => x.id === inv.id ? inv : x); }

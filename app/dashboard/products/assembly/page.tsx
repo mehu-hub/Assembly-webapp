@@ -5,7 +5,12 @@ import { Plus, Trash2, Save, Wrench, AlertCircle, Package } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/components/ui/toast';
-import { products, components, addProduct, addBOMEntry } from '@/lib/data';
+import { useSearchParams } from 'next/navigation';
+import { 
+  products, components, addProduct, addBOMEntry, 
+  updateProduct, deleteBOMEntriesForProduct,
+  getProductById, getBOMForProduct
+} from '@/lib/data';
 import type { Product, BOMEntry } from '@/lib/types';
 
 function generateId(prefix: string) {
@@ -13,7 +18,17 @@ function generateId(prefix: string) {
 }
 
 export default function ProductAssemblyFormPage() {
+  return (
+    <React.Suspense fallback={<div>Loading...</div>}>
+      <AssemblyFormContent />
+    </React.Suspense>
+  );
+}
+
+function AssemblyFormContent() {
   const { addToast } = useToast();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('editId');
 
   // Form State
   const [productName, setProductName] = React.useState('');
@@ -24,6 +39,25 @@ export default function ProductAssemblyFormPage() {
   const [assemblyParts, setAssemblyParts] = React.useState([
     { id: generateId('temp'), componentId: '', quantity: 1 }
   ]);
+
+  React.useEffect(() => {
+    if (editId) {
+      const productToEdit = getProductById(editId);
+      if (productToEdit) {
+        setProductName(productToEdit.name);
+        setPrice(productToEdit.price !== undefined ? productToEdit.price.toString() : '');
+        
+        const boms = getBOMForProduct(editId);
+        if (boms.length > 0) {
+          setAssemblyParts(boms.map(b => ({
+            id: generateId('temp'),
+            componentId: b.componentId,
+            quantity: b.quantityRequired
+          })));
+        }
+      }
+    }
+  }, [editId]);
 
   function handleAddPart() {
     setAssemblyParts((prev) => [
@@ -55,7 +89,7 @@ export default function ProductAssemblyFormPage() {
 
     // Check for duplication
     const isDuplicate = products.some(
-      (p) => p.name.toLowerCase() === name.toLowerCase()
+      (p) => p.name.toLowerCase() === name.toLowerCase() && p.id !== editId
     );
     if (isDuplicate) {
       setError('A product with this name already exists.');
@@ -82,22 +116,27 @@ export default function ProductAssemblyFormPage() {
       return;
     }
 
-    // Create Product
-    const newProductId = generateId('PRD');
-    const newProduct: Product = {
-      id: newProductId,
+    // Create or Update Product
+    const targetProductId = editId || generateId('PRD');
+    const productData: Product = {
+      id: targetProductId,
       name,
-      description: 'Assembled product',
+      description: editId ? (getProductById(editId)?.description || 'Assembled product') : 'Assembled product',
       price: numPrice,
     };
     
-    addProduct(newProduct);
+    if (editId) {
+      updateProduct(productData);
+      deleteBOMEntriesForProduct(editId);
+    } else {
+      addProduct(productData);
+    }
 
     // Create BOM Entries
     assemblyParts.forEach((part) => {
       const bomEntry: BOMEntry = {
         id: generateId('BOM'),
-        productId: newProductId,
+        productId: targetProductId,
         componentId: part.componentId,
         quantityRequired: Number(part.quantity),
       };
@@ -106,14 +145,16 @@ export default function ProductAssemblyFormPage() {
 
     addToast({
       type: 'success',
-      title: 'Assembly Created',
+      title: editId ? 'Assembly Updated' : 'Assembly Created',
       message: `${name} and its components have been saved successfully.`,
     });
 
-    // Reset Form
-    setProductName('');
-    setPrice('');
-    setAssemblyParts([{ id: generateId('temp'), componentId: '', quantity: 1 }]);
+    if (!editId) {
+      // Reset Form only if creating
+      setProductName('');
+      setPrice('');
+      setAssemblyParts([{ id: generateId('temp'), componentId: '', quantity: 1 }]);
+    }
   }
 
   return (
@@ -123,9 +164,9 @@ export default function ProductAssemblyFormPage() {
           <Wrench size={24} />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-slate-900">Create Product Assembly</h2>
+          <h2 className="text-2xl font-bold text-slate-900">{editId ? 'Edit Product Assembly' : 'Create Product Assembly'}</h2>
           <p className="text-sm text-slate-500">
-            Define a new product and map out its required components (Bill of Materials).
+            {editId ? 'Update the details and components for this product.' : 'Define a new product and map out its required components (Bill of Materials).'}
           </p>
         </div>
       </div>
@@ -269,7 +310,7 @@ export default function ProductAssemblyFormPage() {
               className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold shadow-sm shadow-indigo-200 transition-all active:scale-95"
             >
               <Save size={18} />
-              Save Assembly
+              {editId ? 'Save Changes' : 'Save Assembly'}
             </button>
           </div>
         </form>

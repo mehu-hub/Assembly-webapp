@@ -2,17 +2,20 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Layers, ChevronRight, Search, Package } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Layers, ChevronRight, Search, Package, Edit2, Trash2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   products, bomEntries,
-  getComponentById, getBOMForProduct,
+  getComponentById, getBOMForProduct, deleteProduct
 } from '@/lib/data';
 
 export default function ProductStructurePage() {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = React.useState('');
   const [liveProducts, setLiveProducts] = React.useState(products);
+  const [deleteId, setDeleteId] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     setLiveProducts([...products]);
@@ -21,6 +24,12 @@ export default function ProductStructurePage() {
   const filteredProducts = liveProducts.filter((p) =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  function handleDelete(id: string) {
+    deleteProduct(id);
+    setLiveProducts([...products]);
+    setDeleteId(null);
+  }
 
   return (
     <div className="relative z-10 flex flex-col gap-6 max-w-5xl mx-auto w-full">
@@ -65,12 +74,13 @@ export default function ProductStructurePage() {
                 <th className="px-6 py-4 font-semibold text-slate-500 uppercase tracking-wider text-xs">Price</th>
                 <th className="px-6 py-4 font-semibold text-slate-500 uppercase tracking-wider text-xs">Components & Quantities</th>
                 <th className="px-6 py-4 font-semibold text-slate-500 uppercase tracking-wider text-xs text-right">Total Parts</th>
+                <th className="px-6 py-4 font-semibold text-slate-500 uppercase tracking-wider text-xs text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
               {filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-slate-400">
+                  <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
                     <Search className="mx-auto mb-3 text-slate-300" size={24} />
                     <p>No products found matching "{searchTerm}"</p>
                   </td>
@@ -115,6 +125,42 @@ export default function ProductStructurePage() {
                         <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold">
                           {totalParts}
                         </span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        {deleteId === product.id ? (
+                          <div className="flex items-center justify-end gap-2">
+                            <span className="text-xs text-slate-500">Delete?</span>
+                            <button
+                              onClick={() => handleDelete(product.id)}
+                              className="px-2.5 py-1 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition-colors"
+                            >
+                              Yes
+                            </button>
+                            <button
+                              onClick={() => setDeleteId(null)}
+                              className="px-2.5 py-1 rounded-lg border border-slate-200 text-slate-500 text-xs font-semibold hover:bg-slate-50 transition-colors"
+                            >
+                              No
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => router.push(`/dashboard/products/assembly?editId=${product.id}`)}
+                              className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                              title="Edit Product"
+                            >
+                              <Edit2 size={16} />
+                            </button>
+                            <button
+                              onClick={() => setDeleteId(product.id)}
+                              className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              title="Delete Product"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        )}
                       </td>
                     </tr>
                   );

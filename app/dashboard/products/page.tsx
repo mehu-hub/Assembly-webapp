@@ -86,7 +86,7 @@ export default function ProductListPage() {
                   <button
                     id={`delete-${product.id}`}
                     onClick={() => setDeleteId(product.id)}
-                    className="flex-shrink-0 p-2 rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-all duration-150"
+                    className="flex-shrink-0 p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all duration-150"
                     title="Delete product"
                   >
                     <Trash2 size={15} />

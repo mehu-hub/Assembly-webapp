@@ -1,10 +1,10 @@
 'use client';
 
 import * as React from 'react';
-import { Package, Trash2 } from 'lucide-react';
+import { Package, Trash2, Cpu, Zap, Server } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/components/ui/toast';
-import { products, deleteProduct } from '@/lib/data';
+import { products, components, deleteProduct, calculateMaxAssemblies } from '@/lib/data';
 import type { Product } from '@/lib/types';
 
 export default function ProductListPage() {
@@ -28,6 +28,8 @@ export default function ProductListPage() {
     });
   }
 
+  const totalBuildable = items.reduce((sum, p) => sum + calculateMaxAssemblies(p.id).max, 0);
+
   return (
     <div className="relative z-10 flex flex-col gap-6 max-w-3xl mx-auto w-full">
       {/* ── Page header ── */}
@@ -41,6 +43,45 @@ export default function ProductListPage() {
             {items.length} product{items.length !== 1 ? 's' : ''} registered
           </p>
         </div>
+      </div>
+
+      {/* ── Minimal Tech Dashboard ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-2">
+        <Card className="border-slate-100 bg-white shadow-sm overflow-hidden relative group transition-all duration-300 hover:shadow-md hover:border-indigo-200">
+          <div className="absolute -right-6 -top-6 w-20 h-20 bg-indigo-50/80 rounded-full group-hover:scale-[2] transition-transform duration-700 ease-out z-0"></div>
+          <div className="p-5 relative z-10">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Registered</p>
+              <Package className="text-indigo-500 transition-transform duration-300 group-hover:-translate-y-1" size={18} />
+            </div>
+            <p className="text-3xl font-extrabold text-slate-900">{items.length}</p>
+          </div>
+        </Card>
+        
+        <Card className="border-slate-100 bg-white shadow-sm overflow-hidden relative group transition-all duration-300 hover:shadow-md hover:border-emerald-200">
+          <div className="absolute -right-6 -top-6 w-20 h-20 bg-emerald-50/80 rounded-full group-hover:scale-[2] transition-transform duration-700 ease-out z-0"></div>
+          <div className="p-5 relative z-10">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Ready to Build</p>
+              <div className="relative">
+                <Zap className="text-emerald-500 relative z-10 transition-transform duration-300 group-hover:scale-110" size={18} />
+                <div className="absolute inset-0 bg-emerald-400 blur-md opacity-40 animate-pulse"></div>
+              </div>
+            </div>
+            <p className="text-3xl font-extrabold text-slate-900">{totalBuildable} <span className="text-sm font-bold text-slate-400 ml-1">units</span></p>
+          </div>
+        </Card>
+
+        <Card className="border-slate-100 bg-white shadow-sm overflow-hidden relative group transition-all duration-300 hover:shadow-md hover:border-blue-200">
+          <div className="absolute -right-6 -top-6 w-20 h-20 bg-blue-50/80 rounded-full group-hover:scale-[2] transition-transform duration-700 ease-out z-0"></div>
+          <div className="p-5 relative z-10">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Component Types</p>
+              <Cpu className="text-blue-500 animate-[spin_4s_linear_infinite]" size={18} />
+            </div>
+            <p className="text-3xl font-extrabold text-slate-900">{components.length}</p>
+          </div>
+        </Card>
       </div>
 
       {/* ── Product list ── */}

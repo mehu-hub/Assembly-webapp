@@ -64,112 +64,108 @@ export default function ProductStructurePage() {
         />
       </div>
 
-      {/* Unified Table */}
-      <Card className="border-slate-100 bg-white shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-slate-100 bg-slate-50/50 text-left">
-                <th className="px-6 py-4 font-semibold text-slate-500 uppercase tracking-wider text-xs">Product Name</th>
-                <th className="px-6 py-4 font-semibold text-slate-500 uppercase tracking-wider text-xs">Price</th>
-                <th className="px-6 py-4 font-semibold text-slate-500 uppercase tracking-wider text-xs">Components & Quantities</th>
-                <th className="px-6 py-4 font-semibold text-slate-500 uppercase tracking-wider text-xs text-right">Total Parts</th>
-                <th className="px-6 py-4 font-semibold text-slate-500 uppercase tracking-wider text-xs text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-50">
-              {filteredProducts.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-slate-400">
-                    <Search className="mx-auto mb-3 text-slate-300" size={24} />
-                    <p>No products found matching "{searchTerm}"</p>
-                  </td>
-                </tr>
-              ) : (
-                filteredProducts.map((product) => {
-                  const bom = getBOMForProduct(product.id);
-                  const totalParts = bom.reduce((acc, curr) => acc + curr.quantityRequired, 0);
+      {/* Results as Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredProducts.length === 0 ? (
+          <div className="col-span-full py-16 text-center text-slate-500 bg-white border border-slate-100 rounded-2xl shadow-sm">
+            <Search className="mx-auto mb-3 text-slate-300" size={32} />
+            <p className="text-base font-semibold text-slate-600">No products found matching "{searchTerm}"</p>
+            <p className="text-sm text-slate-400">Try a different search term.</p>
+          </div>
+        ) : (
+          filteredProducts.map((product) => {
+            const bom = getBOMForProduct(product.id);
+            const totalParts = bom.reduce((acc, curr) => acc + curr.quantityRequired, 0);
 
-                  return (
-                    <tr key={product.id} className="hover:bg-slate-50/50 transition-colors group">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0">
-                            <Package size={16} />
-                          </div>
-                          <span className="font-semibold text-slate-800">{product.name}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="font-medium text-slate-600">
-                          {product.price !== undefined ? `€${product.price.toFixed(2)}` : '—'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        {bom.length === 0 ? (
-                          <span className="text-xs text-slate-400 italic">No components</span>
-                        ) : (
-                          <div className="flex flex-wrap gap-2">
-                            {bom.map(entry => {
-                              const comp = getComponentById(entry.componentId);
-                              return (
-                                <Badge key={entry.id} variant="secondary" className="bg-slate-100 hover:bg-slate-200 text-slate-700 border-0 font-medium">
-                                  {comp?.name ?? entry.componentId} <span className="text-indigo-600 ml-1">×{entry.quantityRequired}</span>
-                                </Badge>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold">
-                          {totalParts}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        {deleteId === product.id ? (
-                          <div className="flex items-center justify-end gap-2">
-                            <span className="text-xs text-slate-500">Delete?</span>
-                            <button
-                              onClick={() => handleDelete(product.id)}
-                              className="px-2.5 py-1 rounded-lg bg-red-500 hover:bg-red-600 text-white text-xs font-semibold transition-colors"
-                            >
-                              Yes
-                            </button>
-                            <button
-                              onClick={() => setDeleteId(null)}
-                              className="px-2.5 py-1 rounded-lg border border-slate-200 text-slate-500 text-xs font-semibold hover:bg-slate-50 transition-colors"
-                            >
-                              No
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="flex items-center justify-end gap-2">
-                            <button
-                              onClick={() => router.push(`/dashboard/products/assembly?editId=${product.id}`)}
-                              className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                              title="Edit Product"
-                            >
-                              <Edit2 size={16} />
-                            </button>
-                            <button
-                              onClick={() => setDeleteId(product.id)}
-                              className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                              title="Delete Product"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+            return (
+              <Card key={product.id} className="border-slate-100 bg-white shadow-sm overflow-hidden flex flex-col group transition-all hover:shadow-md hover:border-indigo-200">
+                {/* Card Header */}
+                <div className="p-5 border-b border-slate-100 flex items-start justify-between bg-gradient-to-br from-slate-50/50 to-white">
+                  <div className="flex gap-3 items-center">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shadow-sm">
+                      <Package size={20} />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-slate-900 text-base line-clamp-1">{product.name}</h3>
+                      <p className="text-sm font-medium text-slate-500">
+                        {product.price !== undefined ? `€${product.price.toFixed(2)}` : 'No price set'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card Body - Components */}
+                <div className="p-5 flex-1 flex flex-col gap-3">
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Components Structure</p>
+                  {bom.length === 0 ? (
+                    <div className="py-4 text-center border-2 border-dashed border-slate-100 rounded-xl bg-slate-50">
+                      <span className="text-xs text-slate-400 italic">No components assigned yet</span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {bom.map(entry => {
+                        const comp = getComponentById(entry.componentId);
+                        return (
+                          <Badge key={entry.id} variant="outline" className="bg-white border-slate-200 text-slate-700 font-medium px-2.5 py-1 shadow-sm">
+                            <span className="truncate max-w-[120px] sm:max-w-[150px] inline-block align-bottom">{comp?.name ?? entry.componentId}</span>
+                            <span className="text-indigo-600 font-bold ml-1.5 bg-indigo-50 px-1.5 rounded text-[10px]">×{entry.quantityRequired}</span>
+                          </Badge>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                {/* Card Footer */}
+                <div className="px-5 py-3 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between mt-auto">
+                  <div className="flex items-center gap-1.5 text-slate-600">
+                    <Layers size={14} className="text-slate-400" />
+                    <span className="text-sm font-semibold">{totalParts} <span className="text-xs font-normal text-slate-400">total parts</span></span>
+                  </div>
+                  
+                  {/* Actions */}
+                  <div>
+                    {deleteId === product.id ? (
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-medium text-red-500">Delete?</span>
+                        <button
+                          onClick={() => handleDelete(product.id)}
+                          className="px-2 py-1 rounded bg-red-500 hover:bg-red-600 text-white text-xs font-bold transition-colors"
+                        >
+                          Yes
+                        </button>
+                        <button
+                          onClick={() => setDeleteId(null)}
+                          className="px-2 py-1 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold transition-colors"
+                        >
+                          No
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => router.push(`/dashboard/products/assembly?editId=${product.id}`)}
+                          className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                          title="Edit Product"
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                        <button
+                          onClick={() => setDeleteId(product.id)}
+                          className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete Product"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Card>
+            );
+          })
+        )}
+      </div>
     </div>
   );
 }

@@ -75,11 +75,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
 
-  const getHref = (originalHref: string) => {
-    if (originalHref === '/') return '/';
-    if (!user) return '/auth?mode=login';
-    return '#';
-  };
+  const getHref = (originalHref: string) => originalHref;
 
   const [expanded, setExpanded] = React.useState<Record<string, boolean>>(() => {
     // Auto-expand group that matches current path
@@ -224,24 +220,20 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
               <p className="text-xs font-semibold text-slate-700 truncate">{user.name}</p>
               <p className="text-[10px] text-slate-400 truncate">{user.email}</p>
             </div>
-            <button 
-              onClick={logout} 
-              className="text-slate-400 hover:text-red-500 transition-colors p-1 rounded" 
+            <button
+              onClick={logout}
+              className="text-slate-400 hover:text-red-500 transition-colors p-1 rounded"
               title="Log Out"
             >
               <LogOut size={14} />
             </button>
           </div>
         ) : (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1.5">
+            <p className="text-[10px] text-slate-400 text-center mb-0.5">Optional: sign in to save data</p>
             <Link href="/auth?mode=login" onClick={onMobileClose} className="w-full">
-              <Button className="w-full h-8 text-xs bg-indigo-600 hover:bg-indigo-700 text-white">
+              <Button variant="outline" className="w-full h-8 text-xs border-slate-200 hover:bg-indigo-50 hover:border-indigo-300 text-slate-600">
                 Log In
-              </Button>
-            </Link>
-            <Link href="/auth?mode=signup" onClick={onMobileClose} className="w-full">
-              <Button variant="outline" className="w-full h-8 text-xs border-slate-200 hover:bg-slate-50 text-slate-700">
-                Sign Up
               </Button>
             </Link>
           </div>

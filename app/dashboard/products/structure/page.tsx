@@ -3,12 +3,12 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Layers, ChevronRight, Search, Package, Edit2, Trash2 } from 'lucide-react';
+import { Layers, ChevronRight, Search, Package, Edit2, Trash2, Wrench, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   products, bomEntries,
-  getComponentById, getBOMForProduct, deleteProduct
+  getComponentById, getBOMForProduct, deleteProduct, calculateMaxAssemblies, getTotalQty
 } from '@/lib/data';
 
 export default function ProductStructurePage() {
@@ -76,92 +76,178 @@ export default function ProductStructurePage() {
           filteredProducts.map((product) => {
             const bom = getBOMForProduct(product.id);
             const totalParts = bom.reduce((acc, curr) => acc + curr.quantityRequired, 0);
+            const buildCapacity = calculateMaxAssemblies(product.id);
 
             return (
-              <Card key={product.id} className="border-slate-100 bg-white shadow-sm overflow-hidden flex flex-col group transition-all hover:shadow-md hover:border-indigo-200">
-                {/* Card Header */}
-                <div className="p-5 border-b border-slate-100 flex items-start justify-between bg-gradient-to-br from-slate-50/50 to-white">
-                  <div className="flex gap-3 items-center">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shadow-sm">
-                      <Package size={20} />
+              <div 
+                key={product.id} 
+                className="group relative bg-white border border-slate-200/80 rounded-2xl shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 hover:border-indigo-200 transition-all duration-300 flex flex-col justify-between overflow-hidden"
+              >
+                {/* Decorative glowing gradient effect */}
+                <div className="absolute -top-12 -right-12 w-24 h-24 bg-gradient-to-br from-indigo-500/8 to-purple-500/8 rounded-full blur-2xl group-hover:scale-150 transition-all duration-500 pointer-events-none" />
+
+                {/* Card Content with padding */}
+                <div className="p-5 flex-1 flex flex-col">
+                  {/* Top Row: ID Badge & Price tag */}
+                  <div className="flex items-center justify-between gap-2 mb-4">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md">
+                      {product.id}
+                    </span>
+                    <span className="text-xs font-extrabold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full">
+                      {product.price !== undefined ? `€${product.price.toFixed(2)}` : '€0.00'}
+                    </span>
+                  </div>
+
+                  {/* Title & Description */}
+                  <div className="mb-4">
+                    <h3 className="text-base font-bold text-slate-800 group-hover:text-indigo-600 transition-colors line-clamp-1">
+                      {product.name}
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-1 line-clamp-2 min-h-[32px]">
+                      {product.description || "No description provided for this product structure."}
+                    </p>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="h-[1px] bg-slate-100 my-3" />
+
+                  {/* Components List / Assembly Tree */}
+                  <div className="mb-4 flex-1">
+                    <div className="flex items-center justify-between mb-2.5">
+                      <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <Wrench size={12} className="text-indigo-500" />
+                        Required Components
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-medium">
+                        {bom.length} items
+                      </span>
                     </div>
-                    <div>
-                      <h3 className="font-bold text-slate-900 text-base line-clamp-1">{product.name}</h3>
-                      <p className="text-sm font-medium text-slate-500">
-                        {product.price !== undefined ? `€${product.price.toFixed(2)}` : 'No price set'}
+
+                    {bom.length === 0 ? (
+                      <div className="py-4 text-center border border-dashed border-slate-200 rounded-xl bg-slate-50/50">
+                        <span className="text-xs text-slate-400 italic">No components assigned yet</span>
+                      </div>
+                    ) : (
+                      <div className="relative pl-3 border-l border-slate-150 flex flex-col gap-2.5 py-0.5">
+                        {bom.map((entry) => {
+                          const comp = getComponentById(entry.componentId);
+                          const totalStock = getTotalQty(entry.componentId);
+                          const isLowStock = totalStock < entry.quantityRequired;
+                          
+                          return (
+                            <div key={entry.id} className="relative flex items-center justify-between text-xs">
+                              {/* Dot on the timeline */}
+                              <div className={`absolute -left-[16.5px] w-2 h-2 rounded-full border-2 bg-white transition-colors duration-300 ${
+                                isLowStock 
+                                  ? 'border-red-450 group-hover:bg-red-400' 
+                                  : 'border-indigo-400 group-hover:bg-indigo-400'
+                              }`} />
+                              
+                              <div className="flex flex-col pl-1 max-w-[70%]">
+                                <span className="font-semibold text-slate-700 truncate">
+                                  {comp?.name ?? entry.componentId}
+                                </span>
+                                <span className="text-[10px] text-slate-400">
+                                  Stock: {totalStock} {comp?.unit ?? 'pcs'}
+                                </span>
+                              </div>
+
+                              <span className={`font-bold px-2 py-0.5 rounded text-[10px] ${
+                                isLowStock 
+                                  ? 'bg-red-50 text-red-650 border border-red-100' 
+                                  : 'bg-slate-100 text-slate-700'
+                              }`}>
+                                x{entry.quantityRequired}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Build Capacity Card */}
+                  <div className={`p-3 rounded-xl border mt-auto transition-all duration-300 ${
+                    buildCapacity.max > 0 
+                      ? 'bg-emerald-50/40 border-emerald-100/80 text-emerald-800' 
+                      : 'bg-rose-50/40 border-rose-100/80 text-rose-800'
+                  }`}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+                        {buildCapacity.max > 0 ? (
+                          <CheckCircle2 size={13} className="text-emerald-500" />
+                        ) : (
+                          <AlertTriangle size={13} className="text-rose-500" />
+                        )}
+                        Build Capacity
+                      </span>
+                      <span className={`text-xs font-extrabold px-2 py-0.5 rounded-full ${
+                        buildCapacity.max > 0 
+                          ? 'bg-emerald-100 text-emerald-700' 
+                          : 'bg-rose-100 text-rose-700'
+                      }`}>
+                        {buildCapacity.max} {buildCapacity.max === 1 ? 'unit' : 'units'}
+                      </span>
+                    </div>
+                    {buildCapacity.max === 0 && buildCapacity.limitingComponent && (
+                      <p className="text-[10px] text-rose-600 mt-1 font-medium leading-normal">
+                        Shortage: <span className="font-bold">{buildCapacity.limitingComponent}</span>
                       </p>
-                    </div>
+                    )}
+                    {buildCapacity.max > 0 && buildCapacity.limitingComponent && (
+                      <p className="text-[10px] text-emerald-600/80 mt-1 font-medium leading-normal">
+                        Limited by: <span className="font-semibold">{buildCapacity.limitingComponent}</span>
+                      </p>
+                    )}
                   </div>
                 </div>
 
-                {/* Card Body - Components */}
-                <div className="p-5 flex-1 flex flex-col gap-3">
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Components Structure</p>
-                  {bom.length === 0 ? (
-                    <div className="py-4 text-center border-2 border-dashed border-slate-100 rounded-xl bg-slate-50">
-                      <span className="text-xs text-slate-400 italic">No components assigned yet</span>
-                    </div>
-                  ) : (
-                    <div className="flex flex-wrap gap-2">
-                      {bom.map(entry => {
-                        const comp = getComponentById(entry.componentId);
-                        return (
-                          <Badge key={entry.id} variant="outline" className="bg-white border-slate-200 text-slate-700 font-medium px-2.5 py-1 shadow-sm">
-                            <span className="truncate max-w-[120px] sm:max-w-[150px] inline-block align-bottom">{comp?.name ?? entry.componentId}</span>
-                            <span className="text-indigo-600 font-bold ml-1.5 bg-indigo-50 px-1.5 rounded text-[10px]">×{entry.quantityRequired}</span>
-                          </Badge>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-
-                {/* Card Footer */}
-                <div className="px-5 py-3 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between mt-auto">
-                  <div className="flex items-center gap-1.5 text-slate-600">
-                    <Layers size={14} className="text-slate-400" />
-                    <span className="text-sm font-semibold">{totalParts} <span className="text-xs font-normal text-slate-400">total parts</span></span>
+                {/* Footer with different background color */}
+                <div className="flex items-center justify-between px-5 py-3.5 bg-slate-50/80 border-t border-slate-100/80 group-hover:bg-slate-50/90 transition-all duration-300">
+                  <div className="flex items-center gap-1 text-slate-500">
+                    <Layers size={13} className="text-slate-400" />
+                    <span className="text-xs font-semibold">{totalParts} <span className="text-slate-400 font-normal">parts</span></span>
                   </div>
-                  
+
                   {/* Actions */}
                   <div>
                     {deleteId === product.id ? (
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-red-500">Delete?</span>
+                        <span className="text-[11px] font-bold text-red-500">Delete?</span>
                         <button
                           onClick={() => handleDelete(product.id)}
-                          className="px-2 py-1 rounded bg-red-500 hover:bg-red-600 text-white text-xs font-bold transition-colors"
+                          className="px-2 py-0.5 rounded bg-red-500 hover:bg-red-600 text-white text-[10px] font-extrabold transition-colors"
                         >
                           Yes
                         </button>
                         <button
                           onClick={() => setDeleteId(null)}
-                          className="px-2 py-1 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold transition-colors"
+                          className="px-2 py-0.5 rounded bg-slate-200 hover:bg-slate-300 text-slate-700 text-[10px] font-extrabold transition-colors"
                         >
                           No
                         </button>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={() => router.push(`/dashboard/products/assembly?editId=${product.id}`)}
-                          className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                          title="Edit Product"
+                          className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                          title="Edit Assembly"
                         >
-                          <Edit2 size={16} />
+                          <Edit2 size={14} />
                         </button>
                         <button
                           onClick={() => setDeleteId(product.id)}
-                          className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
                           title="Delete Product"
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={14} />
                         </button>
                       </div>
                     )}
                   </div>
                 </div>
-              </Card>
+              </div>
             );
           })
         )}

@@ -3,11 +3,7 @@
 import type { Product, Component, BOMEntry, InventoryEntry } from './types';
 
 // ─── PRODUCTS ────────────────────────────────────────────────────────────────
-export let products: Product[] = [
-  { id: 'PRD-001', name: 'Gaming PC', description: 'High-performance gaming desktop with RTX graphics' },
-  { id: 'PRD-002', name: 'Office PC', description: 'Reliable office workstation for productivity tasks' },
-  { id: 'PRD-003', name: 'Workstation', description: 'Professional workstation for rendering and computation' },
-];
+export let products: Product[] = [];
 
 // ─── COMPONENTS ──────────────────────────────────────────────────────────────
 export let components: Component[] = [
@@ -21,41 +17,17 @@ export let components: Component[] = [
 ];
 
 // ─── BILL OF MATERIALS ───────────────────────────────────────────────────────
-export let bomEntries: BOMEntry[] = [
-  // Gaming PC
-  { id: 'BOM-001', productId: 'PRD-001', componentId: 'CMP-001', quantityRequired: 1 },
-  { id: 'BOM-002', productId: 'PRD-001', componentId: 'CMP-002', quantityRequired: 2 },
-  { id: 'BOM-003', productId: 'PRD-001', componentId: 'CMP-003', quantityRequired: 1 },
-  { id: 'BOM-004', productId: 'PRD-001', componentId: 'CMP-004', quantityRequired: 1 },
-  { id: 'BOM-005', productId: 'PRD-001', componentId: 'CMP-005', quantityRequired: 1 },
-  { id: 'BOM-006', productId: 'PRD-001', componentId: 'CMP-006', quantityRequired: 1 },
-  { id: 'BOM-007', productId: 'PRD-001', componentId: 'CMP-007', quantityRequired: 2 },
-  // Office PC
-  { id: 'BOM-008', productId: 'PRD-002', componentId: 'CMP-001', quantityRequired: 1 },
-  { id: 'BOM-009', productId: 'PRD-002', componentId: 'CMP-002', quantityRequired: 1 },
-  { id: 'BOM-010', productId: 'PRD-002', componentId: 'CMP-003', quantityRequired: 1 },
-  { id: 'BOM-011', productId: 'PRD-002', componentId: 'CMP-004', quantityRequired: 1 },
-  { id: 'BOM-012', productId: 'PRD-002', componentId: 'CMP-005', quantityRequired: 1 },
-  { id: 'BOM-013', productId: 'PRD-002', componentId: 'CMP-007', quantityRequired: 1 },
-  // Workstation
-  { id: 'BOM-014', productId: 'PRD-003', componentId: 'CMP-001', quantityRequired: 2 },
-  { id: 'BOM-015', productId: 'PRD-003', componentId: 'CMP-002', quantityRequired: 4 },
-  { id: 'BOM-016', productId: 'PRD-003', componentId: 'CMP-003', quantityRequired: 2 },
-  { id: 'BOM-017', productId: 'PRD-003', componentId: 'CMP-004', quantityRequired: 1 },
-  { id: 'BOM-018', productId: 'PRD-003', componentId: 'CMP-005', quantityRequired: 1 },
-  { id: 'BOM-019', productId: 'PRD-003', componentId: 'CMP-006', quantityRequired: 2 },
-  { id: 'BOM-020', productId: 'PRD-003', componentId: 'CMP-007', quantityRequired: 3 },
-];
+export let bomEntries: BOMEntry[] = [];
 
 // ─── INVENTORY ───────────────────────────────────────────────────────────────
 export let inventory: InventoryEntry[] = [
-  { id: 'INV-001', componentId: 'CMP-001', workshopQty: 5,  storageQty: 15, unitPrice: 199.99 },
-  { id: 'INV-002', componentId: 'CMP-002', workshopQty: 10, storageQty: 30, unitPrice: 34.99  },
-  { id: 'INV-003', componentId: 'CMP-003', workshopQty: 8,  storageQty: 20, unitPrice: 64.99  },
-  { id: 'INV-004', componentId: 'CMP-004', workshopQty: 4,  storageQty: 12, unitPrice: 149.99 },
-  { id: 'INV-005', componentId: 'CMP-005', workshopQty: 6,  storageQty: 18, unitPrice: 79.99  },
-  { id: 'INV-006', componentId: 'CMP-006', workshopQty: 2,  storageQty: 8,  unitPrice: 399.99 },
-  { id: 'INV-007', componentId: 'CMP-007', workshopQty: 15, storageQty: 40, unitPrice: 24.99  },
+  { id: 'INV-001', componentId: 'CMP-001', workshopQty: 5, storageQty: 15, unitPrice: 199.99 },
+  { id: 'INV-002', componentId: 'CMP-002', workshopQty: 10, storageQty: 30, unitPrice: 34.99 },
+  { id: 'INV-003', componentId: 'CMP-003', workshopQty: 8, storageQty: 20, unitPrice: 64.99 },
+  { id: 'INV-004', componentId: 'CMP-004', workshopQty: 4, storageQty: 12, unitPrice: 149.99 },
+  { id: 'INV-005', componentId: 'CMP-005', workshopQty: 6, storageQty: 18, unitPrice: 79.99 },
+  { id: 'INV-006', componentId: 'CMP-006', workshopQty: 2, storageQty: 8, unitPrice: 399.99 },
+  { id: 'INV-007', componentId: 'CMP-007', workshopQty: 15, storageQty: 40, unitPrice: 24.99 },
 ];
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────

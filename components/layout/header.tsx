@@ -105,8 +105,8 @@ function NavDropdown({ group }: { group: NavGroup }) {
       <button
         className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition-colors
           ${isGroupActive
-            ? 'text-indigo-600 bg-indigo-50'
-            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            ? 'text-indigo-400 bg-indigo-500/10'
+            : 'text-slate-400 hover:text-slate-100 hover:bg-white/5'
           }`}
       >
         <group.icon size={15} />
@@ -115,7 +115,7 @@ function NavDropdown({ group }: { group: NavGroup }) {
       </button>
 
       {/* Dropdown panel */}
-      <div className="absolute top-full left-0 mt-1 w-52 bg-white border border-slate-200 rounded-xl shadow-lg shadow-slate-200/60 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50 py-1.5">
+      <div className="absolute top-full left-0 mt-1 w-52 bg-[#0f1117] border border-white/8 rounded-xl shadow-2xl shadow-black/60 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50 py-1.5">
         {group.children.map(child => {
           const isActive = pathname === child.href || pathname.startsWith(child.href + '/');
           return (
@@ -124,11 +124,11 @@ function NavDropdown({ group }: { group: NavGroup }) {
               href={child.href}
               className={`flex items-center gap-2.5 px-3.5 py-2.5 text-sm transition-colors mx-1.5 rounded-lg
                 ${isActive
-                  ? 'text-indigo-600 bg-indigo-50 font-semibold'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50 font-medium'
+                  ? 'text-indigo-400 bg-indigo-500/10 font-semibold'
+                  : 'text-slate-400 hover:text-slate-100 hover:bg-white/5 font-medium'
                 }`}
             >
-              <child.icon size={15} className={isActive ? 'text-indigo-500' : 'text-slate-400'} />
+              <child.icon size={15} className={isActive ? 'text-indigo-400' : 'text-slate-500'} />
               {child.label}
             </Link>
           );
@@ -147,38 +147,38 @@ export function Header({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
 
   return (
     <header
-      className="sticky top-0 z-30 w-full bg-white/95 border-b border-slate-200 backdrop-blur-md"
-      style={{ boxShadow: '0 1px 6px 0 rgb(0 0 0 / 0.06)' }}
+      className="sticky top-0 z-30 w-full bg-[#0a0d14]/95 border-b border-white/6 backdrop-blur-md"
+      style={{ boxShadow: '0 1px 12px 0 rgb(0 0 0 / 0.5)' }}
     >
       {/* ── Main row ── */}
       <div className="flex items-center gap-4 px-6 h-16 w-full">
 
         {/* Brand / Logo — always visible */}
         <Link href="/" className="flex items-center gap-3 flex-shrink-0 group mr-4" aria-label="Home">
-          <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-600 flex items-center justify-center shadow-md shadow-indigo-200 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-tr from-black/10 to-transparent" />
+          <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-600 flex items-center justify-center shadow-md shadow-indigo-900/50 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent" />
             <Hexagon className="absolute text-white/20 w-7 h-7 rotate-90 transition-transform duration-700 group-hover:rotate-180" strokeWidth={1.5} />
             <Cpu size={17} className="text-white relative z-10 transition-transform duration-300 group-hover:scale-110" />
           </div>
           <div className="flex flex-col leading-none">
-            <span className="text-base font-extrabold tracking-tight text-slate-900">
+            <span className="text-base font-extrabold tracking-tight text-white">
               AMS
             </span>
-            <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-[0.18em] mt-0.5">
+            <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.18em] mt-0.5">
               Assembly
             </span>
           </div>
         </Link>
 
         {/* Divider */}
-        <div className="hidden lg:block w-px h-6 bg-slate-200 flex-shrink-0" />
+        <div className="hidden lg:block w-px h-6 bg-white/8 flex-shrink-0" />
 
         {/* ── Desktop nav groups with hover dropdowns ── */}
         <nav className="hidden lg:flex items-center gap-1 flex-1">
           <Link
             href="/"
             className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-semibold transition-colors
-              ${pathname === '/' ? 'text-indigo-600 bg-indigo-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'}`}
+              ${pathname === '/' ? 'text-indigo-400 bg-indigo-500/10' : 'text-slate-400 hover:text-slate-100 hover:bg-white/5'}`}
           >
             <HomeIcon size={15} />
             Home
@@ -190,7 +190,7 @@ export function Header({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
 
         {/* Mobile menu button */}
         <button
-          className="lg:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
+          className="lg:hidden p-2 rounded-lg text-slate-400 hover:bg-white/5 transition-colors"
           onClick={onMobileMenuOpen}
           aria-label="Open menu"
         >
@@ -204,16 +204,16 @@ export function Header({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
 
           {/* Breadcrumb */}
           <nav aria-label="Breadcrumb" className="hidden md:flex items-center gap-1 text-sm">
-            <Link href="/" className="flex items-center justify-center w-7 h-7 rounded-md text-indigo-500 hover:bg-indigo-50 transition-colors" aria-label="Home">
+            <Link href="/" className="flex items-center justify-center w-7 h-7 rounded-md text-indigo-400 hover:bg-indigo-500/10 transition-colors" aria-label="Home">
               <HomeIcon size={14} />
             </Link>
             {crumbs.map((crumb, i) => (
               <React.Fragment key={crumb.href}>
-                <span className="text-slate-300">/</span>
+                <span className="text-slate-600">/</span>
                 {i === crumbs.length - 1 ? (
-                  <span className="text-slate-400 text-xs font-medium px-1">{crumb.label}</span>
+                  <span className="text-slate-500 text-xs font-medium px-1">{crumb.label}</span>
                 ) : (
-                  <Link href={crumb.href} className="text-xs text-slate-500 hover:text-indigo-600 font-medium px-1 transition-colors">
+                  <Link href={crumb.href} className="text-xs text-slate-500 hover:text-indigo-400 font-medium px-1 transition-colors">
                     {crumb.label}
                   </Link>
                 )}
@@ -221,28 +221,28 @@ export function Header({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
             ))}
           </nav>
 
-          <div className="hidden md:block w-px h-5 bg-slate-200" />
+          <div className="hidden md:block w-px h-5 bg-white/8" />
 
           {/* Auth */}
           {user ? (
             <>
-              <button className="relative p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors" aria-label="Notifications">
+              <button className="relative p-2 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-colors" aria-label="Notifications">
                 <Bell size={17} />
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-red-500 ring-2 ring-white" />
+                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-red-500 ring-2 ring-[#0a0d14]" />
               </button>
-              <button className="flex items-center gap-2 h-8 px-1 rounded-lg hover:bg-slate-100 transition-colors" aria-label="Profile">
+              <button className="flex items-center gap-2 h-8 px-1 rounded-lg hover:bg-white/5 transition-colors" aria-label="Profile">
                 <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold uppercase shadow-sm">
                   {user.name[0]}
                 </div>
-                <span className="hidden sm:block text-sm font-semibold text-slate-700 pr-1">{user.name}</span>
+                <span className="hidden sm:block text-sm font-semibold text-slate-300 pr-1">{user.name}</span>
               </button>
             </>
           ) : (
             <>
-              <Link href="/auth?mode=login" className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-slate-50">
+              <Link href="/auth?mode=login" className="text-sm font-medium text-slate-400 hover:text-indigo-400 transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5">
                 Log in
               </Link>
-              <Link href="/auth?mode=signup" className="text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition-all px-4 py-1.5 rounded-lg shadow-sm shadow-indigo-200 active:scale-95">
+              <Link href="/auth?mode=signup" className="text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition-all px-4 py-1.5 rounded-lg shadow-sm shadow-indigo-900/50 active:scale-95">
                 Get Started
               </Link>
             </>

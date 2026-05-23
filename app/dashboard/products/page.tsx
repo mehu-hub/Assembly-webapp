@@ -35,8 +35,8 @@ export default function ProductListPage() {
       {/* ── Page header ── */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <Package className="text-indigo-600" size={26} />
+          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+            <Package className="text-indigo-400" size={26} />
             Product List
           </h2>
           <p className="text-sm text-slate-500 mt-1">
@@ -47,63 +47,63 @@ export default function ProductListPage() {
 
       {/* ── Minimal Tech Dashboard ── */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-2">
-        <Card className="border-slate-100 bg-white shadow-sm overflow-hidden relative group transition-all duration-300 hover:shadow-md hover:border-indigo-200">
-          <div className="absolute -right-6 -top-6 w-20 h-20 bg-indigo-50/80 rounded-full group-hover:scale-[2] transition-transform duration-700 ease-out z-0"></div>
+        <Card className="border-white/6 bg-[#0f1117] shadow-sm overflow-hidden relative group transition-all duration-300 hover:shadow-md hover:border-indigo-500/20">
+          <div className="absolute -right-6 -top-6 w-20 h-20 bg-indigo-500/10 rounded-full group-hover:scale-[2] transition-transform duration-700 ease-out z-0"></div>
           <div className="p-5 relative z-10">
             <div className="flex items-center justify-between mb-4">
               <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Registered</p>
-              <Package className="text-indigo-500 transition-transform duration-300 group-hover:-translate-y-1" size={18} />
+              <Package className="text-indigo-400 transition-transform duration-300 group-hover:-translate-y-1" size={18} />
             </div>
-            <p className="text-3xl font-extrabold text-slate-900">{items.length}</p>
+            <p className="text-3xl font-extrabold text-white">{items.length}</p>
           </div>
         </Card>
         
-        <Card className="border-slate-100 bg-white shadow-sm overflow-hidden relative group transition-all duration-300 hover:shadow-md hover:border-emerald-200">
-          <div className="absolute -right-6 -top-6 w-20 h-20 bg-emerald-50/80 rounded-full group-hover:scale-[2] transition-transform duration-700 ease-out z-0"></div>
+        <Card className="border-white/6 bg-[#0f1117] shadow-sm overflow-hidden relative group transition-all duration-300 hover:shadow-md hover:border-emerald-500/20">
+          <div className="absolute -right-6 -top-6 w-20 h-20 bg-emerald-500/10 rounded-full group-hover:scale-[2] transition-transform duration-700 ease-out z-0"></div>
           <div className="p-5 relative z-10">
             <div className="flex items-center justify-between mb-4">
               <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Ready to Build</p>
               <div className="relative">
-                <Zap className="text-emerald-500 relative z-10 transition-transform duration-300 group-hover:scale-110" size={18} />
-                <div className="absolute inset-0 bg-emerald-400 blur-md opacity-40 animate-pulse"></div>
+                <Zap className="text-emerald-400 relative z-10 transition-transform duration-300 group-hover:scale-110" size={18} />
+                <div className="absolute inset-0 bg-emerald-400 blur-md opacity-30 animate-pulse"></div>
               </div>
             </div>
-            <p className="text-3xl font-extrabold text-slate-900">{totalBuildable} <span className="text-sm font-bold text-slate-400 ml-1">units</span></p>
+            <p className="text-3xl font-extrabold text-white">{totalBuildable} <span className="text-sm font-bold text-slate-500 ml-1">units</span></p>
           </div>
         </Card>
 
-        <Card className="border-slate-100 bg-white shadow-sm overflow-hidden relative group transition-all duration-300 hover:shadow-md hover:border-blue-200">
-          <div className="absolute -right-6 -top-6 w-20 h-20 bg-blue-50/80 rounded-full group-hover:scale-[2] transition-transform duration-700 ease-out z-0"></div>
+        <Card className="border-white/6 bg-[#0f1117] shadow-sm overflow-hidden relative group transition-all duration-300 hover:shadow-md hover:border-blue-500/20">
+          <div className="absolute -right-6 -top-6 w-20 h-20 bg-blue-500/10 rounded-full group-hover:scale-[2] transition-transform duration-700 ease-out z-0"></div>
           <div className="p-5 relative z-10">
             <div className="flex items-center justify-between mb-4">
               <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Component Types</p>
-              <Cpu className="text-blue-500 animate-[spin_4s_linear_infinite]" size={18} />
+              <Cpu className="text-blue-400 animate-[spin_4s_linear_infinite]" size={18} />
             </div>
-            <p className="text-3xl font-extrabold text-slate-900">{components.length}</p>
+            <p className="text-3xl font-extrabold text-white">{components.length}</p>
           </div>
         </Card>
       </div>
 
       {/* ── Product list ── */}
-      <Card className="border-slate-100 bg-white shadow-sm overflow-hidden">
+      <Card className="border-white/6 bg-[#0f1117] shadow-sm overflow-hidden">
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
-            <div className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center">
-              <Package size={26} className="text-slate-400" />
+            <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center">
+              <Package size={26} className="text-slate-600" />
             </div>
             <p className="text-sm font-medium text-slate-500">No products yet</p>
-            <p className="text-xs text-slate-400">Go to Product Assembly to create a new product.</p>
+            <p className="text-xs text-slate-600">Go to Product Assembly to create a new product.</p>
           </div>
         ) : (
-          <ul className="divide-y divide-slate-50">
+          <ul className="divide-y divide-white/4">
             {items.map((product) => (
               <li
                 key={product.id}
-                className="flex items-center gap-4 px-5 py-4 group hover:bg-slate-50/80 transition-colors"
+                className="flex items-center gap-4 px-5 py-4 group hover:bg-white/3 transition-colors"
               >
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-slate-800 truncate">{product.name}</p>
+                  <p className="text-sm font-semibold text-slate-200 truncate">{product.name}</p>
                 </div>
 
                 {/* Delete */}
@@ -118,7 +118,7 @@ export default function ProductListPage() {
                     </button>
                     <button
                       onClick={() => setDeleteId(null)}
-                      className="px-2.5 py-1 rounded-lg border border-slate-200 text-slate-500 text-xs font-semibold hover:bg-slate-50 transition-colors"
+                      className="px-2.5 py-1 rounded-lg border border-white/10 text-slate-400 text-xs font-semibold hover:bg-white/5 transition-colors"
                     >
                       No
                     </button>
@@ -127,7 +127,7 @@ export default function ProductListPage() {
                   <button
                     id={`delete-${product.id}`}
                     onClick={() => setDeleteId(product.id)}
-                    className="flex-shrink-0 p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all duration-150"
+                    className="flex-shrink-0 p-2 rounded-lg text-slate-600 hover:text-red-400 hover:bg-red-500/10 transition-all duration-150"
                     title="Delete product"
                   >
                     <Trash2 size={15} />

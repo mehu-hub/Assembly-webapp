@@ -209,11 +209,11 @@ export function Header({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
             </Link>
             {crumbs.map((crumb, i) => (
               <React.Fragment key={crumb.href}>
-                <span className="text-slate-600">/</span>
+                <span className="text-slate-500">/</span>
                 {i === crumbs.length - 1 ? (
-                  <span className="text-slate-500 text-xs font-medium px-1">{crumb.label}</span>
+                  <span className="text-slate-400 text-xs font-medium px-1">{crumb.label}</span>
                 ) : (
-                  <Link href={crumb.href} className="text-xs text-slate-500 hover:text-indigo-400 font-medium px-1 transition-colors">
+                  <Link href={crumb.href} className="text-xs text-slate-400 hover:text-indigo-400 font-medium px-1 transition-colors">
                     {crumb.label}
                   </Link>
                 )}

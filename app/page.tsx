@@ -113,15 +113,15 @@ export default function WelcomePage() {
             <h2 className="text-2xl font-bold text-white mb-2">Welcome Back, {user.name}!</h2>
             <p className="text-slate-500 mb-6 text-sm">Quick actions and shortcuts to manage your assembly workspace:</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="p-4 rounded-xl border border-white/6 bg-white/3 shadow-sm hover:shadow transition-shadow">
+              <div className="p-4 rounded-xl border border-white/6 bg-white/5 shadow-sm hover:shadow transition-shadow">
                 <h4 className="text-sm font-semibold text-slate-200 mb-1">Add Components</h4>
                 <p className="text-xs text-slate-500">Manage workshop and storage inventory</p>
               </div>
-              <div className="p-4 rounded-xl border border-white/6 bg-white/3 shadow-sm hover:shadow transition-shadow">
+              <div className="p-4 rounded-xl border border-white/6 bg-white/5 shadow-sm hover:shadow transition-shadow">
                 <h4 className="text-sm font-semibold text-slate-200 mb-1">Run Calculations</h4>
                 <p className="text-xs text-slate-500">Calculate assemblable product quotas</p>
               </div>
-              <div className="p-4 rounded-xl border border-white/6 bg-white/3 shadow-sm hover:shadow transition-shadow">
+              <div className="p-4 rounded-xl border border-white/6 bg-white/5 shadow-sm hover:shadow transition-shadow">
                 <h4 className="text-sm font-semibold text-slate-200 mb-1">Check Reports</h4>
                 <p className="text-xs text-slate-500">Generate BOM and pricing sheets</p>
               </div>

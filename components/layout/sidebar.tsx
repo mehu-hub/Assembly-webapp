@@ -119,7 +119,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
         </Link>
         {/* Mobile close button */}
         <button
-          className="ml-auto lg:hidden p-1 text-slate-600 hover:text-slate-300"
+          className="ml-auto lg:hidden p-1 text-slate-500 hover:text-slate-300"
           onClick={onMobileClose}
           aria-label="Close sidebar"
         >
@@ -145,7 +145,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
                     : 'text-slate-500 hover:bg-white/4 hover:text-slate-200'
                 )}
               >
-                <item.icon size={17} className={active ? 'text-indigo-400' : 'text-slate-600'} />
+                <item.icon size={17} className={active ? 'text-indigo-400' : 'text-slate-500'} />
                 {item.label}
                 {active && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-400" />}
               </Link>
@@ -197,7 +197,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
                             : 'text-slate-500 hover:bg-white/4 hover:text-slate-200'
                         )}
                       >
-                        <child.icon size={14} className={active ? 'text-indigo-400' : 'text-slate-600'} />
+                        <child.icon size={14} className={active ? 'text-indigo-400' : 'text-slate-500'} />
                         {child.label}
                       </Link>
                     );
@@ -222,7 +222,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
             </div>
             <button
               onClick={logout}
-              className="text-slate-600 hover:text-red-400 transition-colors p-1 rounded"
+              className="text-slate-500 hover:text-red-400 transition-colors p-1 rounded hover:bg-white/5"
               title="Log Out"
             >
               <LogOut size={14} />
@@ -230,7 +230,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
           </div>
         ) : (
           <div className="flex flex-col gap-1.5">
-            <p className="text-[10px] text-slate-600 text-center mb-0.5">Optional: sign in to save data</p>
+            <p className="text-[10px] text-slate-500 text-center mb-0.5">Optional: sign in to save data</p>
             <Link href="/auth?mode=login" onClick={onMobileClose} className="w-full">
               <Button variant="outline" className="w-full h-8 text-xs border-white/10 hover:bg-indigo-500/10 hover:border-indigo-500/30 text-slate-400">
                 Log In
@@ -270,7 +270,7 @@ export function MobileMenuButton({ onClick }: { onClick: () => void }) {
   return (
     <button
       onClick={onClick}
-      className="lg:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100 transition-colors"
+      className="lg:hidden p-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-white/5 transition-colors"
       aria-label="Open navigation"
     >
       <Menu size={20} />

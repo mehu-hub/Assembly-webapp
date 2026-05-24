@@ -13,7 +13,7 @@ export function Footer() {
         
         {/* Left Side: Copyright Info */}
         <div className="order-3 md:order-1 text-center md:text-left">
-          <p className="text-xs text-slate-600">
+          <p className="text-xs text-slate-500">
             &copy; {currentYear} Mehedi Hasan. All rights reserved.
           </p>
         </div>
@@ -32,7 +32,7 @@ export function Footer() {
         </div>
 
         {/* Right Side: Social Icons */}
-        <div className="order-2 md:order-3 flex items-center justify-center gap-5 text-slate-600">
+        <div className="order-2 md:order-3 flex items-center justify-center gap-5 text-slate-400">
           <a 
             href="https://github.com/mehu-hub" 
             target="_blank" 

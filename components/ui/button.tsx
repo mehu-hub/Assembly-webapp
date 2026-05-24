@@ -9,11 +9,11 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm hover:shadow-md',
-        secondary: 'bg-slate-100 text-slate-700 hover:bg-slate-200',
-        ghost: 'bg-transparent text-slate-600 hover:bg-slate-100',
-        danger: 'bg-red-500 text-white hover:bg-red-600 shadow-sm',
-        outline: 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50',
-        success: 'bg-emerald-500 text-white hover:bg-emerald-600 shadow-sm',
+        secondary: 'bg-white/5 text-slate-200 hover:bg-white/10',
+        ghost: 'bg-transparent text-slate-400 hover:bg-white/5 hover:text-slate-200',
+        danger: 'bg-red-500/90 text-white hover:bg-red-600 shadow-sm',
+        outline: 'border border-white/10 bg-transparent text-slate-300 hover:bg-white/5',
+        success: 'bg-emerald-500/90 text-white hover:bg-emerald-600 shadow-sm',
       },
       size: {
         sm: 'h-8 px-3 text-xs rounded-md gap-1.5 [&_svg]:size-3.5',

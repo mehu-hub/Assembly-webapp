@@ -39,12 +39,12 @@ function AuthForm() {
     <div className="flex-1 flex flex-col items-center justify-center min-h-[70vh]">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-slate-100 flex items-center justify-center mx-auto mb-6">
-            <div className="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600">
+          <div className="w-16 h-16 bg-[#0f1117] rounded-2xl shadow-sm border border-white/6 flex items-center justify-center mx-auto mb-6">
+            <div className="w-12 h-12 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-400">
               <Wrench size={24} />
             </div>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+          <h1 className="text-3xl font-bold tracking-tight text-white">
             {isLogin ? 'Welcome back' : 'Create an account'}
           </h1>
           <p className="text-slate-500 mt-2 text-sm">
@@ -54,7 +54,7 @@ function AuthForm() {
           </p>
         </div>
 
-        <Card className="border-slate-200 shadow-sm">
+        <Card className="border-white/6 shadow-sm bg-[#0f1117]">
           <form onSubmit={handleSubmit}>
             <CardHeader>
               <CardTitle className="text-xl">{isLogin ? 'Login' : 'Sign Up'}</CardTitle>
@@ -93,7 +93,7 @@ function AuthForm() {
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
                   {isLogin && (
-                    <Link href="#" className="text-xs font-medium text-indigo-600 hover:text-indigo-500">
+                    <Link href="#" className="text-xs font-medium text-indigo-400 hover:text-indigo-300">
                       Forgot password?
                     </Link>
                   )}
@@ -123,7 +123,7 @@ function AuthForm() {
             <button
               onClick={() => setIsLogin(!isLogin)}
               type="button"
-              className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors"
+              className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
             >
               {isLogin ? 'Sign up' : 'Log in'}
             </button>

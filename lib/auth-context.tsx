@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 interface User {
   name: string;
   email: string;
+  role: 'ADMIN' | 'USER';
 }
 
 interface AuthContextType {
@@ -36,9 +37,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = (email: string, name?: string) => {
-    const newUser = {
-      name: name || email.split('@')[0],
+    const newUser: User = {
+      name: name || email.split('@')[0] || 'User',
       email: email,
+      role: email === 'admin' || email.includes('admin') ? 'ADMIN' : 'USER',
     };
     setUser(newUser);
     localStorage.setItem('ams_user', JSON.stringify(newUser));

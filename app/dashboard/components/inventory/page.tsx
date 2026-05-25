@@ -19,10 +19,6 @@ export default function InventoryPage() {
   
   const { addToast } = useToast();
 
-  React.useEffect(() => {
-    fetchData();
-  }, []);
-
   const fetchData = async () => {
     setIsLoading(true);
     try {
@@ -41,6 +37,10 @@ export default function InventoryPage() {
       setIsLoading(false);
     }
   };
+
+  React.useEffect(() => {
+    fetchData();
+  }, []);
 
   const resetForm = () => {
     setComponentId('');

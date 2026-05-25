@@ -7,6 +7,7 @@ import { ToastProvider } from '@/components/ui/toast';
 import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { AuthProvider } from '@/lib/auth-context';
+import { AuthGuard } from '@/components/AuthGuard';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -32,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
                 <div className="relative z-10 p-6 max-w-[1400px] mx-auto w-full flex-1 flex flex-col">
                   <div className="flex-1 flex flex-col">
-                    {children}
+                    <AuthGuard>{children}</AuthGuard>
                   </div>
                 </div>
                 <Footer />

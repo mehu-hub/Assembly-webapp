@@ -4,68 +4,24 @@ import * as React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
+ 
+ 
+ 
+ 
   Home, Package, Cpu, Archive, Wrench, FileBarChart,
+ 
+ 
+ 
+ 
   List, Layers, Boxes, DollarSign, ClipboardList,
+ 
+ 
   CheckSquare, Calculator, BarChart3, ChevronDown,
   Bell, Home as HomeIcon, ChevronRight, Hexagon
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 
-// ─── Nav config ───────────────────────────────────────────────────────────────
-interface NavChild {
-  label: string;
-  href: string;
-  icon: React.ElementType;
-}
-interface NavGroup {
-  label: string;
-  icon: React.ElementType;
-  children: NavChild[];
-}
-
-const navGroups: NavGroup[] = [
-  {
-    label: 'Products', icon: Package,
-    children: [
-      { label: 'Product List',      href: '/dashboard/products',           icon: List    },
-      { label: 'Product Structure', href: '/dashboard/products/structure', icon: Layers  },
-      { label: 'Product Assembly',  href: '/dashboard/products/assembly',  icon: Wrench  },
-    ],
-  },
-  {
-    label: 'Components', icon: Cpu,
-    children: [
-      { label: 'Component List', href: '/dashboard/components',           icon: List    },
-      { label: 'In Workshop',    href: '/dashboard/components/workshop',  icon: Wrench  },
-      { label: 'In Storage',     href: '/dashboard/components/storage',   icon: Archive },
-      { label: 'Inventory',      href: '/dashboard/components/inventory', icon: Boxes   },
-    ],
-  },
-  {
-    label: 'Stock', icon: Archive,
-    children: [
-      { label: 'Component Stock',  href: '/dashboard/stock',            icon: Boxes      },
-      { label: 'Quantities',       href: '/dashboard/stock/quantities', icon: BarChart3  },
-      { label: 'Prices',           href: '/dashboard/stock/prices',     icon: DollarSign },
-    ],
-  },
-  {
-    label: 'Assembly', icon: Wrench,
-    children: [
-      { label: 'Required Components', href: '/dashboard/assembly/required',   icon: ClipboardList },
-      { label: 'Assemblable',         href: '/dashboard/assembly/possible',   icon: CheckSquare   },
-      { label: 'Calculator',          href: '/dashboard/assembly/calculator', icon: Calculator    },
-    ],
-  },
-  {
-    label: 'Reports', icon: FileBarChart,
-    children: [
-      { label: 'Product Structure Report', href: '/dashboard/reports',           icon: FileBarChart },
-      { label: 'Inventory Report',         href: '/dashboard/reports/inventory', icon: Boxes        },
-      { label: 'Assembly Possibility',     href: '/dashboard/reports/assembly',  icon: CheckSquare  },
-    ],
-  },
-];
+import { navItems, type NavItem } from '@/hooks/useSidebar';
 
 // ─── Route labels for breadcrumb ──────────────────────────────────────────────
 const routeLabels: Record<string, string> = {
@@ -92,13 +48,16 @@ function useBreadcrumbs() {
 function getPageTitle(pathname: string): string {
   const segments = pathname.split('/').filter(Boolean);
   if (!segments.length) return 'Home';
-  return routeLabels[segments[segments.length - 1]] ?? segments[segments.length - 1];
+  const last = segments[segments.length - 1];
+  if (!last) return 'Home';
+  return routeLabels[last] ?? last;
 }
 
-// ─── Dropdown menu item ────────────────────────────────────────────────────────
-function NavDropdown({ group }: { group: NavGroup }) {
+function NavDropdown({ group }: { group: NavItem }) {
   const pathname = usePathname();
-  const isGroupActive = group.children.some(c => pathname.startsWith(c.href));
+  const { user } = useAuth();
+  if (!group.children) return null;
+  const isGroupActive = group.children.some(c => pathname.startsWith(c.href ?? ''));
 
   return (
     <div className="relative group">
@@ -117,11 +76,13 @@ function NavDropdown({ group }: { group: NavGroup }) {
       {/* Dropdown panel */}
       <div className="absolute top-full left-0 mt-1 w-52 bg-[#0f1117] border border-white/8 rounded-xl shadow-2xl shadow-black/60 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50 py-1.5">
         {group.children.map(child => {
-          const isActive = pathname === child.href || pathname.startsWith(child.href + '/');
+          if (user && child.adminOnly && user.role !== 'ADMIN') return null;
+          const childHref = child.href ?? '/';
+          const isActive = pathname === childHref || pathname.startsWith(childHref + '/');
           return (
             <Link
-              key={child.href}
-              href={child.href}
+              key={childHref}
+              href={childHref}
               className={`flex items-center gap-2.5 px-3.5 py-2.5 text-sm transition-colors mx-1.5 rounded-lg
                 ${isActive
                   ? 'text-indigo-400 bg-indigo-500/10 font-semibold'
@@ -183,9 +144,10 @@ export function Header({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
             <HomeIcon size={15} />
             Home
           </Link>
-          {navGroups.map(group => (
-            <NavDropdown key={group.label} group={group} />
-          ))}
+          {navItems.map(group => {
+            if (group.label === 'Home') return null;
+            return <NavDropdown key={group.label} group={group} />;
+          })}
         </nav>
 
         {/* Mobile menu button */}

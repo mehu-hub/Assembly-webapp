@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
+ 
 import { ProductModel, BOMEntryModel, ComponentModel, InventoryEntryModel } from '@/lib/models';
 import mongoose from 'mongoose';
 
@@ -73,6 +74,7 @@ export async function GET() {
   } catch (error: any) {
     console.error('Failed to fetch from MongoDB, returning mock products:', error);
     // Dynamic import to avoid circular dependency issues if any
+ 
     const { products: mockProducts, bomEntries: mockBOMs, components: mockComps, inventory: mockInv } = require('@/lib/data');
     
     // Quick and dirty mock enrichment for fallback

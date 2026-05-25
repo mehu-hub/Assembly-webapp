@@ -2,103 +2,32 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import {
-  Home, Package, Cpu, BarChart3, Wrench, ChevronDown, ChevronRight,
-  List, Layers, Calculator, FileBarChart, Archive, DollarSign,
-  Boxes, ClipboardList, CheckSquare, AlertTriangle, Settings, X, Menu, Hexagon, LogOut
+  Cpu, ChevronDown, ChevronRight,
+  X, Menu, Hexagon, LogOut
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth-context';
+import { useSidebar, type NavItem } from '@/hooks/useSidebar';
 
-// ─── Nav config ──────────────────────────────────────────────────────────────
-interface NavItem {
-  label: string;
-  href?: string;
-  icon: React.ElementType;
-  children?: NavItem[];
-}
-
-const navItems: NavItem[] = [
-  { label: 'Home', href: '/', icon: Home },
-  {
-    label: 'Products', icon: Package,
-    children: [
-      { label: 'Product List',      href: '/dashboard/products',           icon: List       },
-      { label: 'Product Structure', href: '/dashboard/products/structure', icon: Layers     },
-      { label: 'Product Assembly',  href: '/dashboard/products/assembly',  icon: Wrench     },
-    ],
-  },
-  {
-    label: 'Components', icon: Cpu,
-    children: [
-      { label: 'Component List',   href: '/dashboard/components',             icon: List         },
-      { label: 'In Workshop',      href: '/dashboard/components/workshop',    icon: Wrench       },
-      { label: 'In Storage',       href: '/dashboard/components/storage',     icon: Archive      },
-      { label: 'Inventory',        href: '/dashboard/components/inventory',   icon: Boxes        },
-    ],
-  },
-  {
-    label: 'Stock', icon: Archive,
-    children: [
-      { label: 'Component Stock',  href: '/dashboard/stock',             icon: Boxes        },
-      { label: 'Stock Quantities', href: '/dashboard/stock/quantities',  icon: BarChart3    },
-      { label: 'Component Prices', href: '/dashboard/stock/prices',      icon: DollarSign   },
-    ],
-  },
-  {
-    label: 'Assembly', icon: Wrench,
-    children: [
-      { label: 'Required Components',       href: '/dashboard/assembly/required',   icon: ClipboardList },
-      { label: 'Products Assemblable',      href: '/dashboard/assembly/possible',   icon: CheckSquare   },
-      { label: 'Assembly Calculator',       href: '/dashboard/assembly/calculator', icon: Calculator    },
-    ],
-  },
-  {
-    label: 'Reports', icon: FileBarChart,
-    children: [
-      { label: 'Product Structure Report',   href: '/dashboard/reports',             icon: FileBarChart  },
-      { label: 'Inventory Report',           href: '/dashboard/reports/inventory',   icon: Boxes         },
-      { label: 'Assembly Possibility',       href: '/dashboard/reports/assembly',    icon: CheckSquare   },
-    ],
-  },
-];
-
-// ─── Sidebar component ────────────────────────────────────────────────────────
-interface SidebarProps {
-  mobileOpen: boolean;
+// ─── Types ───────────────────────────────────────────────────────────────────
+interface SidebarContentProps {
+  user: { name: string; email: string; role: 'ADMIN' | 'USER' } | null;
+  logout: () => void;
   onMobileClose: () => void;
+  expanded: Record<string, boolean>;
+  setExpanded: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  toggleGroup: (label: string) => void;
+  isActive: (href: string) => boolean;
+  navItems: NavItem[];
 }
 
-export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
-  const pathname = usePathname();
-  const { user, logout } = useAuth();
-
-  const getHref = (originalHref: string) => originalHref;
-
-  const [expanded, setExpanded] = React.useState<Record<string, boolean>>(() => {
-    // Auto-expand group that matches current path
-    const state: Record<string, boolean> = {};
-    navItems.forEach(item => {
-      if (item.children) {
-        const active = item.children.some(child => pathname.startsWith(child.href ?? ''));
-        state[item.label] = active;
-      }
-    });
-    return state;
-  });
-
-  const toggleGroup = (label: string) => {
-    setExpanded(prev => ({ ...prev, [label]: !prev[label] }));
-  };
-
-  const isActive = (href: string) => {
-    if (href === '/') return pathname === '/';
-    return pathname === href || pathname.startsWith(href + '/');
-  };
-
-  const SidebarContent = () => (
+// ─── Sidebar inner content (must live OUTSIDE of the Sidebar fn) ─────────────
+function SidebarContent({
+  user, logout, onMobileClose, expanded, setExpanded, toggleGroup, isActive, navItems
+}: SidebarContentProps) {
+  return (
     <div className="flex flex-col h-full bg-[#0a0d14]">
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 py-6 border-b border-white/6">
@@ -109,15 +38,14 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
             <Cpu size={20} className="text-white relative z-10 transition-transform duration-300 group-hover:scale-110" />
           </div>
           <div className="flex flex-col">
-            <span className="text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 leading-none">
+            <span className="text-xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-100 to-slate-300 leading-none">
               AMS
             </span>
-            <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-[0.2em] mt-1 leading-none">
+            <span className="text-[10px] font-bold text-indigo-400 uppercase tracking-[0.2em] mt-1 leading-none">
               Assembly
             </span>
           </div>
         </Link>
-        {/* Mobile close button */}
         <button
           className="ml-auto lg:hidden p-1 text-slate-500 hover:text-slate-300"
           onClick={onMobileClose}
@@ -131,12 +59,11 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
       <nav className="flex-1 overflow-y-auto py-4 px-3">
         {navItems.map(item => {
           if (!item.children) {
-            // Simple nav item
             const active = isActive(item.href!);
             return (
               <Link
                 key={item.label}
-                href={getHref(item.href!)}
+                href={item.href!}
                 onClick={onMobileClose}
                 className={cn(
                   'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 mb-0.5',
@@ -152,13 +79,12 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
             );
           }
 
-          // Group
           const isOpen = expanded[item.label];
           const hasActive = item.children.some(child => isActive(child.href ?? ''));
 
           return (
-            <div 
-              key={item.label} 
+            <div
+              key={item.label}
               className="mb-0.5 group/navItem"
               onMouseEnter={() => setExpanded(prev => ({ ...prev, [item.label]: true }))}
               onMouseLeave={() => setExpanded(prev => ({ ...prev, [item.label]: false }))}
@@ -184,11 +110,12 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
               {isOpen && (
                 <div className="ml-4 pl-3 border-l-2 border-white/10 mt-0.5 mb-1 space-y-0.5">
                   {item.children.map(child => {
+                    if (user && child.adminOnly && user.role !== 'ADMIN') return null;
                     const active = isActive(child.href ?? '');
                     return (
                       <Link
                         key={child.label}
-                        href={getHref(child.href!)}
+                        href={child.href!}
                         onClick={onMobileClose}
                         className={cn(
                           'flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-150',
@@ -230,7 +157,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
           </div>
         ) : (
           <div className="flex flex-col gap-1.5">
-            <p className="text-[10px] text-slate-500 text-center mb-0.5">Optional: sign in to save data</p>
+            <p className="text-[10px] text-slate-500 text-center mb-0.5">Sign in to access the dashboard</p>
             <Link href="/auth?mode=login" onClick={onMobileClose} className="w-full">
               <Button variant="outline" className="w-full h-8 text-xs border-white/10 hover:bg-indigo-500/10 hover:border-indigo-500/30 text-slate-400">
                 Log In
@@ -241,6 +168,21 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
       </div>
     </div>
   );
+}
+
+// ─── Sidebar shell ────────────────────────────────────────────────────────────
+interface SidebarProps {
+  mobileOpen: boolean;
+  onMobileClose: () => void;
+}
+
+export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
+  const { user, logout } = useAuth();
+  const { expanded, setExpanded, toggleGroup, isActive, navItems } = useSidebar();
+
+  const contentProps: SidebarContentProps = {
+    user, logout, onMobileClose, expanded, setExpanded, toggleGroup, isActive, navItems
+  };
 
   return (
     <>
@@ -249,7 +191,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
         className="hidden lg:flex flex-col w-[260px] flex-shrink-0 bg-[#0a0d14] border-r border-white/6 h-screen sticky top-0 overflow-hidden"
         style={{ boxShadow: '2px 0 12px 0 rgb(0 0 0 / 0.4)' }}
       >
-        <SidebarContent />
+        <SidebarContent {...contentProps} />
       </aside>
 
       {/* Mobile overlay */}
@@ -257,7 +199,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
         <div className="lg:hidden fixed inset-0 z-40">
           <div className="absolute inset-0 bg-black/50" onClick={onMobileClose} />
           <aside className="relative z-10 flex flex-col w-[260px] h-full bg-[#0a0d14] shadow-2xl">
-            <SidebarContent />
+            <SidebarContent {...contentProps} />
           </aside>
         </div>
       )}
@@ -265,7 +207,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
   );
 }
 
-// ─── Mobile menu button (exported for use in header) ─────────────────────────
+// ─── Mobile menu button ───────────────────────────────────────────────────────
 export function MobileMenuButton({ onClick }: { onClick: () => void }) {
   return (
     <button

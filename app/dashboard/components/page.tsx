@@ -17,10 +17,6 @@ export default function ComponentListPage() {
   
   const { addToast } = useToast();
 
-  React.useEffect(() => {
-    fetchComponents();
-  }, []);
-
   const fetchComponents = () => {
     setIsLoading(true);
     fetch('/api/components')
@@ -34,6 +30,10 @@ export default function ComponentListPage() {
         setIsLoading(false);
       });
   };
+
+  React.useEffect(() => {
+    fetchComponents();
+  }, []);
 
   const resetForm = () => {
     setName('');

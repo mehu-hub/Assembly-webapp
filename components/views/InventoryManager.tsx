@@ -11,9 +11,9 @@ import * as z from 'zod';
 
 const formSchema = z.object({
   componentId: z.string().min(1, 'Component is required'),
-  workshopQty: z.number({ coerce: true }).min(0, 'Must be positive'),
-  storageQty: z.number({ coerce: true }).min(0, 'Must be positive'),
-  unitPrice: z.number({ coerce: true }).min(0, 'Must be positive'),
+  workshopQty: z.coerce.number().min(0, 'Must be 0 or more'),
+  storageQty: z.coerce.number().min(0, 'Must be 0 or more'),
+  unitPrice: z.coerce.number().min(0, 'Must be 0 or more'),
 });
 
 type FormValues = z.infer<typeof formSchema>;

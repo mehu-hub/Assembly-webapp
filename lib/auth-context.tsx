@@ -11,7 +11,8 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, name?: string) => void;
+  login: (email: string, password?: string) => void;
+  signup: (email: string, password?: string, name?: string) => void;
   logout: () => void;
   loading: boolean;
 }
@@ -36,14 +37,56 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(false);
   }, []);
 
-  const login = (email: string, name?: string) => {
-    const newUser: User = {
+  const login = (email: string, password?: string) => {
+    // Check if we have registered users
+    const storedUsersJson = localStorage.getItem('ams_users');
+    const users: any[] = storedUsersJson ? JSON.parse(storedUsersJson) : [];
+    
+    // Find the user
+    const foundUser = users.find(u => u.email === email && u.password === password);
+    
+    if (!foundUser) {
+      throw new Error('Invalid email or password.');
+    }
+
+    const authUser: User = {
+      name: foundUser.name,
+      email: foundUser.email,
+      role: foundUser.role,
+    };
+    
+    setUser(authUser);
+    localStorage.setItem('ams_user', JSON.stringify(authUser));
+    router.push('/');
+  };
+
+  const signup = (email: string, password?: string, name?: string) => {
+    const storedUsersJson = localStorage.getItem('ams_users');
+    const users: any[] = storedUsersJson ? JSON.parse(storedUsersJson) : [];
+    
+    // Check if email already exists
+    if (users.some(u => u.email === email)) {
+      throw new Error('Account with this email already exists.');
+    }
+
+    const newUser = {
       name: name || email.split('@')[0] || 'User',
       email: email,
+      password: password,
       role: email === 'admin' || email.includes('admin') ? 'ADMIN' : 'USER',
     };
-    setUser(newUser);
-    localStorage.setItem('ams_user', JSON.stringify(newUser));
+    
+    users.push(newUser);
+    localStorage.setItem('ams_users', JSON.stringify(users));
+
+    const authUser: User = {
+      name: newUser.name,
+      email: newUser.email,
+      role: newUser.role as 'ADMIN' | 'USER',
+    };
+
+    setUser(authUser);
+    localStorage.setItem('ams_user', JSON.stringify(authUser));
     router.push('/');
   };
 
@@ -54,7 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

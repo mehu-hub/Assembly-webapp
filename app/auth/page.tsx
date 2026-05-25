@@ -16,7 +16,8 @@ function AuthForm() {
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode');
   const [isLogin, setIsLogin] = React.useState(true);
-  const { login } = useAuth();
+  const { login, signup } = useAuth();
+  const [error, setError] = React.useState('');
 
   const [name, setName] = React.useState('');
   const [email, setEmail] = React.useState('');
@@ -32,7 +33,16 @@ function AuthForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    login(email, isLogin ? undefined : name);
+    setError('');
+    try {
+      if (isLogin) {
+        login(email, password);
+      } else {
+        signup(email, password, name);
+      }
+    } catch (err: any) {
+      setError(err.message);
+    }
   };
 
   return (
@@ -65,6 +75,11 @@ function AuthForm() {
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
+              {error && (
+                <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-lg">
+                  {error}
+                </div>
+              )}
               {!isLogin && (
                 <div className="space-y-1.5">
                   <Label htmlFor="name">Full Name</Label>

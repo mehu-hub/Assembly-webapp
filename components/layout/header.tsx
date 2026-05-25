@@ -17,7 +17,7 @@ import {
  
  
   CheckSquare, Calculator, BarChart3, ChevronDown,
-  Bell, Home as HomeIcon, ChevronRight, Hexagon
+  Bell, Home as HomeIcon, ChevronRight, Hexagon, LogOut
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 
@@ -104,7 +104,7 @@ export function Header({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
   const pathname = usePathname();
   const crumbs = useBreadcrumbs();
   const pageTitle = getPageTitle(pathname);
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   return (
     <header
@@ -197,6 +197,15 @@ export function Header({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
                   {user.name[0]}
                 </div>
                 <span className="hidden sm:block text-sm font-semibold text-slate-300 pr-1">{user.name}</span>
+              </button>
+              <div className="w-px h-4 bg-white/10 mx-1 hidden sm:block" />
+              <button 
+                onClick={logout}
+                className="p-2 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                aria-label="Sign out"
+                title="Sign out"
+              >
+                <LogOut size={17} />
               </button>
             </>
           ) : (

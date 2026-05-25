@@ -6,28 +6,40 @@ import { useRouter } from 'next/navigation';
 import { Layers, ChevronRight, Search, Package, Edit2, Trash2, Wrench, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import {
-  products, bomEntries,
-  getComponentById, getBOMForProduct, deleteProduct, calculateMaxAssemblies, getTotalQty
-} from '@/lib/data';
+
 
 export default function ProductStructurePage() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = React.useState('');
-  const [liveProducts, setLiveProducts] = React.useState(products);
+  const [liveProducts, setLiveProducts] = React.useState<any[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
   const [deleteId, setDeleteId] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    setLiveProducts([...products]);
+    fetch('/api/products')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setLiveProducts(data);
+        } else {
+          setLiveProducts([]);
+          console.error("API error:", data);
+        }
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setLiveProducts([]);
+        setIsLoading(false);
+      });
   }, []);
 
   const filteredProducts = liveProducts.filter((p) =>
     p.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  function handleDelete(id: string) {
-    deleteProduct(id);
-    setLiveProducts([...products]);
+  async function handleDelete(id: string) {
+    await fetch(`/api/products/${id}`, { method: 'DELETE' });
+    setLiveProducts(liveProducts.filter(p => p.id !== id));
     setDeleteId(null);
   }
 
@@ -66,7 +78,11 @@ export default function ProductStructurePage() {
 
       {/* Results as Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredProducts.length === 0 ? (
+        {isLoading ? (
+          <div className="col-span-full py-16 text-center text-slate-400 bg-[#0f1117] border border-white/6 rounded-2xl shadow-sm">
+            <p className="text-base font-semibold text-slate-300">Loading...</p>
+          </div>
+        ) : filteredProducts.length === 0 ? (
           <div className="col-span-full py-16 text-center text-slate-400 bg-[#0f1117] border border-white/6 rounded-2xl shadow-sm">
             <Search className="mx-auto mb-3 text-slate-500" size={32} />
             <p className="text-base font-semibold text-slate-300">No products found matching "{searchTerm}"</p>
@@ -74,9 +90,9 @@ export default function ProductStructurePage() {
           </div>
         ) : (
           filteredProducts.map((product) => {
-            const bom = getBOMForProduct(product.id);
-            const totalParts = bom.reduce((acc, curr) => acc + curr.quantityRequired, 0);
-            const buildCapacity = calculateMaxAssemblies(product.id);
+            const bom = product.bom || [];
+            const totalParts = product.totalParts || 0;
+            const buildCapacity = product.buildCapacity || { max: 0, limitingComponent: 'N/A' };
 
             return (
               <div 
@@ -129,10 +145,8 @@ export default function ProductStructurePage() {
                       </div>
                     ) : (
                       <div className="relative pl-3 border-l border-white/10 flex flex-col gap-2.5 py-0.5">
-                        {bom.map((entry) => {
-                          const comp = getComponentById(entry.componentId);
-                          const totalStock = getTotalQty(entry.componentId);
-                          const isLowStock = totalStock < entry.quantityRequired;
+                        {bom.map((entry: any) => {
+                          const isLowStock = entry.isLowStock;
                           
                           return (
                             <div key={entry.id} className="relative flex items-center justify-between text-xs">
@@ -145,10 +159,10 @@ export default function ProductStructurePage() {
                               
                               <div className="flex flex-col pl-1 max-w-[70%]">
                                 <span className="font-semibold text-slate-200 truncate">
-                                  {comp?.name ?? entry.componentId}
+                                  {entry.componentName ?? entry.componentId}
                                 </span>
                                 <span className="text-[10px] text-slate-500">
-                                  Stock: {totalStock} {comp?.unit ?? 'pcs'}
+                                  Stock: {entry.totalStock} {entry.componentUnit ?? 'pcs'}
                                 </span>
                               </div>
 

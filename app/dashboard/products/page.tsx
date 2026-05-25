@@ -4,31 +4,55 @@ import * as React from 'react';
 import { Package, Trash2, Cpu, Zap, Server } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/components/ui/toast';
-import { products, components, deleteProduct, calculateMaxAssemblies } from '@/lib/data';
 import type { Product } from '@/lib/types';
 
 export default function ProductListPage() {
-  const [items, setItems] = React.useState<Product[]>(products);
+  const [items, setItems] = React.useState<any[]>([]);
+  const [componentsCount, setComponentsCount] = React.useState(0);
+  const [isLoading, setIsLoading] = React.useState(true);
   const [deleteId, setDeleteId] = React.useState<string | null>(null);
   const { addToast } = useToast();
 
   React.useEffect(() => {
-    // Sync with global products on mount (in case it changed on another page)
-    setItems([...products]);
+    fetch('/api/products')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setItems(data);
+        } else {
+          setItems([]);
+        }
+        setIsLoading(false);
+      }).catch(() => {
+        setItems([]);
+        setIsLoading(false);
+      });
+      
+    fetch('/api/components')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setComponentsCount(data.length);
+        }
+      }).catch(() => setComponentsCount(0));
   }, []);
 
-  function handleDelete(id: string) {
-    deleteProduct(id);
-    setItems([...products]);
-    setDeleteId(null);
-    addToast({
-      type: 'success',
-      title: 'Product deleted',
-      message: 'The product was successfully removed.',
-    });
+  async function handleDelete(id: string) {
+    try {
+      await fetch(`/api/products/${id}`, { method: 'DELETE' });
+      setItems(items.filter(p => p.id !== id));
+      setDeleteId(null);
+      addToast({
+        type: 'success',
+        title: 'Product deleted',
+        message: 'The product was successfully removed.',
+      });
+    } catch (error) {
+      addToast({ type: 'error', title: 'Error', message: 'Failed to delete product.' });
+    }
   }
 
-  const totalBuildable = items.reduce((sum, p) => sum + calculateMaxAssemblies(p.id).max, 0);
+  const totalBuildable = items.reduce((sum, p) => sum + (p.buildCapacity?.max || 0), 0);
 
   return (
     <div className="relative z-10 flex flex-col gap-6 max-w-3xl mx-auto w-full">
@@ -79,14 +103,18 @@ export default function ProductListPage() {
               <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Component Types</p>
               <Cpu className="text-blue-400 animate-[spin_4s_linear_infinite]" size={18} />
             </div>
-            <p className="text-3xl font-extrabold text-white">{components.length}</p>
+            <p className="text-3xl font-extrabold text-white">{componentsCount}</p>
           </div>
         </Card>
       </div>
 
       {/* ── Product list ── */}
       <Card className="border-white/6 bg-[#0f1117] shadow-sm overflow-hidden">
-        {items.length === 0 ? (
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-3">
+            <p className="text-sm font-medium text-slate-500">Loading products...</p>
+          </div>
+        ) : items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3">
             <div className="w-14 h-14 rounded-full bg-white/5 flex items-center justify-center">
               <Package size={26} className="text-slate-600" />

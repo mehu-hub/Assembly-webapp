@@ -6,11 +6,7 @@ import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/components/ui/toast';
 import { useSearchParams } from 'next/navigation';
-import { 
-  products, components, addProduct, addBOMEntry, 
-  updateProduct, deleteBOMEntriesForProduct,
-  getProductById, getBOMForProduct
-} from '@/lib/data';
+
 import type { Product, BOMEntry } from '@/lib/types';
 
 function generateId(prefix: string) {
@@ -35,27 +31,42 @@ function AssemblyFormContent() {
   const [price, setPrice] = React.useState<string>('');
   const [error, setError] = React.useState('');
 
+  const [componentsList, setComponentsList] = React.useState<any[]>([]);
+  const [productsList, setProductsList] = React.useState<any[]>([]);
+
   // Dynamic Components List
   const [assemblyParts, setAssemblyParts] = React.useState([
-    { id: generateId('temp'), componentId: '', quantity: 1 }
+    { id: 'temp-initial', componentId: '', quantity: 1 }
   ]);
 
   React.useEffect(() => {
+    fetch('/api/components').then(r => r.json()).then(data => {
+      if (Array.isArray(data)) setComponentsList(data);
+      else { setComponentsList([]); setError(data.error || 'Failed to fetch components'); }
+    }).catch(() => setComponentsList([]));
+
+    fetch('/api/products').then(r => r.json()).then(data => {
+      if (Array.isArray(data)) setProductsList(data);
+      else setProductsList([]);
+    }).catch(() => setProductsList([]));
+
     if (editId) {
-      const productToEdit = getProductById(editId);
-      if (productToEdit) {
-        setProductName(productToEdit.name);
-        setPrice(productToEdit.price !== undefined ? productToEdit.price.toString() : '');
-        
-        const boms = getBOMForProduct(editId);
-        if (boms.length > 0) {
-          setAssemblyParts(boms.map(b => ({
-            id: generateId('temp'),
-            componentId: b.componentId,
-            quantity: b.quantityRequired
-          })));
-        }
-      }
+      fetch(`/api/products/${editId}`)
+        .then(r => r.json())
+        .then(productToEdit => {
+          if (productToEdit && !productToEdit.error) {
+            setProductName(productToEdit.name);
+            setPrice(productToEdit.price !== undefined ? productToEdit.price.toString() : '');
+            
+            if (productToEdit.assemblyParts && productToEdit.assemblyParts.length > 0) {
+              setAssemblyParts(productToEdit.assemblyParts.map((b: any) => ({
+                id: generateId('temp'),
+                componentId: b.componentId,
+                quantity: b.quantity
+              })));
+            }
+          }
+        });
     }
   }, [editId]);
 
@@ -77,7 +88,7 @@ function AssemblyFormContent() {
     );
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
 
@@ -88,7 +99,7 @@ function AssemblyFormContent() {
     }
 
     // Check for duplication
-    const isDuplicate = products.some(
+    const isDuplicate = productsList.some(
       (p) => p.name.toLowerCase() === name.toLowerCase() && p.id !== editId
     );
     if (isDuplicate) {
@@ -116,44 +127,46 @@ function AssemblyFormContent() {
       return;
     }
 
-    // Create or Update Product
-    const targetProductId = editId || generateId('PRD');
-    const productData: Product = {
-      id: targetProductId,
+    const payload = {
       name,
-      description: editId ? (getProductById(editId)?.description || 'Assembled product') : 'Assembled product',
+      description: 'Assembled product',
       price: numPrice,
+      assemblyParts: assemblyParts.map(p => ({
+        componentId: p.componentId,
+        quantity: Number(p.quantity)
+      }))
     };
-    
-    if (editId) {
-      updateProduct(productData);
-      deleteBOMEntriesForProduct(editId);
-    } else {
-      addProduct(productData);
-    }
 
-    // Create BOM Entries
-    assemblyParts.forEach((part) => {
-      const bomEntry: BOMEntry = {
-        id: generateId('BOM'),
-        productId: targetProductId,
-        componentId: part.componentId,
-        quantityRequired: Number(part.quantity),
-      };
-      addBOMEntry(bomEntry);
-    });
+    try {
+      if (editId) {
+        const res = await fetch(`/api/products/${editId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error((await res.json()).error || 'Failed to update');
+      } else {
+        const res = await fetch(`/api/products`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error((await res.json()).error || 'Failed to create');
+      }
 
-    addToast({
-      type: 'success',
-      title: editId ? 'Assembly Updated' : 'Assembly Created',
-      message: `${name} and its components have been saved successfully.`,
-    });
+      addToast({
+        type: 'success',
+        title: editId ? 'Assembly Updated' : 'Assembly Created',
+        message: `${name} and its components have been saved successfully.`,
+      });
 
-    if (!editId) {
-      // Reset Form only if creating
-      setProductName('');
-      setPrice('');
-      setAssemblyParts([{ id: generateId('temp'), componentId: '', quantity: 1 }]);
+      if (!editId) {
+        setProductName('');
+        setPrice('');
+        setAssemblyParts([{ id: generateId('temp'), componentId: '', quantity: 1 }]);
+      }
+    } catch (err: any) {
+      setError(err.message || 'An error occurred while saving.');
     }
   }
 
@@ -251,9 +264,9 @@ function AssemblyFormContent() {
                         required
                       >
                         <option value="" disabled>Select a component...</option>
-                        {components.map((c) => (
+                        {Array.isArray(componentsList) && componentsList.map((c) => (
                           <option key={c.id} value={c.id}>
-                            {c.name} ({c.id})
+                            {c.name}
                           </option>
                         ))}
                       </select>

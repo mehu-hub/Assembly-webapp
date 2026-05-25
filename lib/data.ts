@@ -14,6 +14,7 @@ export let components: Component[] = [
   { id: 'CMP-005', name: 'Power Supply 500W', unit: 'pcs', description: '80+ Bronze certified modular PSU' },
   { id: 'CMP-006', name: 'Graphics Card RTX 3060', unit: 'pcs', description: 'NVIDIA RTX 3060 12GB GDDR6 GPU' },
   { id: 'CMP-007', name: 'Cooling Fan 120mm', unit: 'pcs', description: 'PWM 120mm case fan with RGB' },
+  { id: 'CMP-008', name: 'Monitor 27" 144Hz', unit: 'pcs', description: '27 inch IPS gaming monitor 144Hz' },
 ];
 
 // ─── BILL OF MATERIALS ───────────────────────────────────────────────────────

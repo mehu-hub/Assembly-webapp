@@ -15,7 +15,7 @@ const ProductSchema = new Schema({
 ProductSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
-  transform: function (doc, ret) {
+  transform: function (doc, ret: any) {
     ret.id = ret._id.toString();
     delete ret._id;
   }
@@ -32,7 +32,7 @@ const ComponentSchema = new Schema({
 ComponentSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
-  transform: function (doc, ret) {
+  transform: function (doc, ret: any) {
     ret.id = ret._id.toString();
     delete ret._id;
   }
@@ -49,7 +49,7 @@ const BOMEntrySchema = new Schema({
 BOMEntrySchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
-  transform: function (doc, ret) {
+  transform: function (doc, ret: any) {
     ret.id = ret._id.toString();
     delete ret._id;
   }
@@ -67,7 +67,7 @@ const InventoryEntrySchema = new Schema({
 InventoryEntrySchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
-  transform: function (doc, ret) {
+  transform: function (doc, ret: any) {
     ret.id = ret._id.toString();
     delete ret._id;
   }

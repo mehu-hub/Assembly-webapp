@@ -1,11 +1,21 @@
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import { ComponentModel } from '@/lib/models';
-import { components as mockComponents } from '@/lib/data';
 
 export async function GET() {
-  // Bypassed MongoDB entirely as per request: components will load manually from mock data first.
-  return NextResponse.json(mockComponents);
+  try {
+    await connectToDatabase();
+    const components = await ComponentModel.find({}).lean();
+    const formatted = components.map(c => ({
+      id: c._id.toString(),
+      name: c.name,
+      unit: c.unit,
+      description: c.description
+    }));
+    return NextResponse.json(formatted);
+  } catch (error: any) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : String(error) }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {

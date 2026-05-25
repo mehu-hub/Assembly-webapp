@@ -10,16 +10,18 @@ export async function GET() {
     
     const products = await ProductModel.find({}).lean();
     const boms = await BOMEntryModel.find({}).lean();
-    
-    // Load components and inventory manually from mock data
-    const { components, inventory } = require('@/lib/data');
+    const components = await ComponentModel.find({}).lean();
+    const inventory = await InventoryEntryModel.find({}).lean();
 
     // Helper functions for backend calculation
     const getBOM = (prodId: string) => boms.filter(b => b.productId.toString() === prodId.toString());
-    const getComp = (compId: string) => components.find((c: any) => c.id === compId.toString());
+    const getComp = (compId: string) => components.find(c => c._id.toString() === compId.toString());
     const getStock = (compId: string) => {
-      const inv = inventory.find((i: any) => i.componentId === compId.toString());
+      const inv = inventory.find(i => i.componentId.toString() === compId.toString());
       return inv ? (inv.workshopQty + inv.storageQty) : 0;
+    };
+    const hasInventory = (compId: string) => {
+      return inventory.some(i => i.componentId.toString() === compId.toString());
     };
 
     const enrichedProducts = products.map(prod => {
@@ -40,6 +42,7 @@ export async function GET() {
           limitingComponent = comp?.name || compId;
         }
 
+        const inInventory = hasInventory(compId);
         return {
           id: bom._id.toString(),
           componentId: compId,
@@ -47,7 +50,8 @@ export async function GET() {
           componentUnit: comp?.unit,
           quantityRequired: bom.quantityRequired,
           totalStock: stock,
-          isLowStock: stock < bom.quantityRequired
+          hasInventory: inInventory,
+          isLowStock: !inInventory || stock < bom.quantityRequired
         };
       });
 
@@ -72,32 +76,7 @@ export async function GET() {
 
     return NextResponse.json(enrichedProducts);
   } catch (error: any) {
-    console.error('Failed to fetch from MongoDB, returning mock products:', error);
-    // Dynamic import to avoid circular dependency issues if any
- 
-    const { products: mockProducts, bomEntries: mockBOMs, components: mockComps, inventory: mockInv } = require('@/lib/data');
-    
-    // Quick and dirty mock enrichment for fallback
-    const enrichedMock = mockProducts.map((prod: any) => {
-      const prodBOMs = mockBOMs.filter((b: any) => b.productId === prod.id);
-      return {
-        ...prod,
-        bom: prodBOMs.map((bom: any) => {
-          const comp = mockComps.find((c: any) => c.id === bom.componentId);
-          return {
-            id: bom.id || Math.random().toString(),
-            componentId: bom.componentId,
-            componentName: comp?.name || bom.componentId,
-            quantityRequired: bom.quantityRequired,
-            totalStock: 999,
-            isLowStock: false
-          };
-        }),
-        buildCapacity: { max: 999, limitingComponent: 'None' }
-      };
-    });
-    
-    return NextResponse.json(enrichedMock);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 

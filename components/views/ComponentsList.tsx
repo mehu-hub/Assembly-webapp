@@ -1,19 +1,31 @@
 'use client';
 
 import * as React from 'react';
-import { Cpu, Plus, Trash2, Edit2, Save, X } from 'lucide-react';
+import { Cpu, Edit2, Save, X } from 'lucide-react';
+import { DeleteButton } from '@/components/ui/delete-button';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/components/ui/toast';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
+const formSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  unit: z.string().min(1, 'Unit is required'),
+  description: z.string().optional(),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 export default function ComponentListPage() {
   const [components, setComponents] = React.useState<any[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [editingId, setEditingId] = React.useState<string | null>(null);
   
-  // Form states
-  const [name, setName] = React.useState('');
-  const [unit, setUnit] = React.useState('pcs');
-  const [description, setDescription] = React.useState('');
+  const { control, handleSubmit, reset, setValue, setFocus, formState: { errors } } = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { name: '', unit: 'pcs', description: '' }
+  });
   
   const { addToast } = useToast();
 
@@ -36,27 +48,21 @@ export default function ComponentListPage() {
   }, []);
 
   const resetForm = () => {
-    setName('');
-    setUnit('pcs');
-    setDescription('');
+    reset({ name: '', unit: 'pcs', description: '' });
     setEditingId(null);
   };
 
   const handleEdit = (comp: any) => {
     setEditingId(comp.id);
-    setName(comp.name);
-    setUnit(comp.unit);
-    setDescription(comp.description || '');
+    setValue('name', comp.name);
+    setValue('unit', comp.unit);
+    setValue('description', comp.description || '');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => setFocus('name'), 100);
   };
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim()) {
-      addToast({ type: 'error', title: 'Error', message: 'Name is required' });
-      return;
-    }
-
-    const payload = { name, unit, description };
+  const handleSave = async (data: FormValues) => {
+    const payload = { name: data.name, unit: data.unit, description: data.description };
 
     try {
       if (editingId) {
@@ -84,8 +90,6 @@ export default function ComponentListPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this component? This may affect products and inventory.')) return;
-    
     try {
       const res = await fetch(`/api/components/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error((await res.json()).error || 'Failed to delete');
@@ -109,32 +113,54 @@ export default function ComponentListPage() {
       </div>
 
       <Card className="border-white/6 shadow-sm bg-[#0f1117] overflow-hidden p-6">
-        <form onSubmit={handleSave} className="flex flex-col sm:flex-row gap-4 items-end border-b border-white/10 pb-6 mb-6">
+        <form onSubmit={handleSubmit(handleSave)} className="flex flex-col sm:flex-row gap-4 items-start border-b border-white/10 pb-6 mb-6">
           <div className="flex-1 flex flex-col gap-2">
             <label className="text-xs font-semibold text-slate-400 uppercase">Name</label>
-            <input 
-              value={name} onChange={e => setName(e.target.value)}
-              className="h-10 px-3 border border-white/10 bg-[#0a0d14] text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50" 
-              placeholder="Component name" required
+            <Controller
+              name="name"
+              control={control}
+              render={({ field }) => (
+                <input 
+                  {...field}
+                  className={`h-10 px-3 border bg-[#0a0d14] text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${errors.name ? 'border-red-500/50' : 'border-white/10'}`} 
+                  placeholder="Component name"
+                />
+              )}
             />
+            {errors.name && <span className="text-[10px] text-red-400">{errors.name.message}</span>}
           </div>
           <div className="w-24 flex flex-col gap-2">
             <label className="text-xs font-semibold text-slate-400 uppercase">Unit</label>
-            <input 
-              value={unit} onChange={e => setUnit(e.target.value)}
-              className="h-10 px-3 border border-white/10 bg-[#0a0d14] text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50" 
-              placeholder="e.g. pcs" required
+            <Controller
+              name="unit"
+              control={control}
+              render={({ field }) => (
+                <input 
+                  {...field}
+                  className={`h-10 px-3 border bg-[#0a0d14] text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${errors.unit ? 'border-red-500/50' : 'border-white/10'}`} 
+                  placeholder="e.g. pcs"
+                />
+              )}
             />
+            {errors.unit && <span className="text-[10px] text-red-400">{errors.unit.message}</span>}
           </div>
           <div className="flex-2 flex flex-col gap-2 w-full sm:w-auto sm:flex-1">
             <label className="text-xs font-semibold text-slate-400 uppercase">Description</label>
-            <input 
-              value={description} onChange={e => setDescription(e.target.value)}
-              className="h-10 px-3 border border-white/10 bg-[#0a0d14] text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50" 
-              placeholder="Optional description" 
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <input 
+                  {...field}
+                  value={field.value || ''}
+                  className={`h-10 px-3 border bg-[#0a0d14] text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${errors.description ? 'border-red-500/50' : 'border-white/10'}`} 
+                  placeholder="Optional description" 
+                />
+              )}
             />
+            {errors.description && <span className="text-[10px] text-red-400">{errors.description.message}</span>}
           </div>
-          <div className="flex gap-2 w-full sm:w-auto mt-4 sm:mt-0">
+          <div className="flex gap-2 w-full sm:w-auto mt-6 sm:mt-6">
             {editingId && (
               <button type="button" onClick={resetForm} className="h-10 px-4 flex items-center justify-center bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors">
                 <X size={18} />
@@ -164,9 +190,7 @@ export default function ComponentListPage() {
                   <button onClick={() => handleEdit(comp)} className="p-2 text-slate-500 hover:text-indigo-400 hover:bg-indigo-500/10 rounded-lg transition-colors">
                     <Edit2 size={16} />
                   </button>
-                  <button onClick={() => handleDelete(comp.id)} className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors">
-                    <Trash2 size={16} />
-                  </button>
+                  <DeleteButton onConfirm={() => handleDelete(comp.id)} />
                 </div>
               </div>
             ))}

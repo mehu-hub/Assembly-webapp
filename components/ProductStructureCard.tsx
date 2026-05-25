@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Layers, Edit2, Trash2, Wrench, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Layers, Edit2, Trash2, Wrench, AlertTriangle, CheckCircle2, PackageX } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 export function ProductStructureCard({
@@ -67,18 +67,26 @@ export function ProductStructureCard({
                 return (
                   <div key={entry.id} className="relative flex items-center justify-between text-xs">
                     <div className={`absolute -left-[16.5px] w-2 h-2 rounded-full border-2 bg-white transition-colors duration-300 ${
-                      isLowStock ? 'border-red-450 group-hover:bg-red-400' : 'border-indigo-400 group-hover:bg-indigo-400'
+                      !entry.hasInventory ? 'border-amber-400 group-hover:bg-amber-400' :
+                      entry.isLowStock ? 'border-red-450 group-hover:bg-red-400' : 'border-indigo-400 group-hover:bg-indigo-400'
                     }`} />
                     <div className="flex flex-col pl-1 max-w-[70%]">
                       <span className="font-semibold text-slate-200 truncate">
                         {entry.componentName ?? entry.componentId}
                       </span>
-                      <span className="text-[10px] text-slate-500">
-                        Stock: {entry.totalStock} {entry.componentUnit ?? 'pcs'}
-                      </span>
+                      {!entry.hasInventory ? (
+                        <span className="text-[10px] text-amber-400 flex items-center gap-1">
+                          <PackageX size={10} /> No inventory record — add in Component Inventory
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-slate-500">
+                          Stock: {entry.totalStock} {entry.componentUnit ?? 'pcs'}
+                        </span>
+                      )}
                     </div>
                     <span className={`font-bold px-2 py-0.5 rounded text-[10px] ${
-                      isLowStock ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-white/10 text-slate-300'
+                      !entry.hasInventory ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
+                      entry.isLowStock ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-white/10 text-slate-300'
                     }`}>
                       x{entry.quantityRequired}
                     </span>

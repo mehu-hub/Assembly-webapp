@@ -10,8 +10,7 @@ export async function GET(request: Request, props: { params: Promise<{ id: strin
     if (!product) return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     
     const boms = await BOMEntryModel.find({ productId: params.id }).lean();
-    
-    const { components } = require('@/lib/data');
+    const components = await ComponentModel.find({}).lean();
 
     return NextResponse.json({
       ...product,
@@ -20,7 +19,7 @@ export async function GET(request: Request, props: { params: Promise<{ id: strin
       assemblyParts: boms.map((b: any) => ({
         id: b._id.toString(),
         componentId: b.componentId,
-        componentName: components.find((c: any) => c.id === b.componentId)?.name || 'Unknown',
+        componentName: components.find((c: any) => c._id.toString() === b.componentId.toString())?.name || 'Unknown',
         quantity: b.quantityRequired
       }))
     });

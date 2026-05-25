@@ -1,5 +1,3 @@
-'use client';
-
 import type { Product, Component, BOMEntry, InventoryEntry } from './types';
 
 // ─── PRODUCTS ────────────────────────────────────────────────────────────────

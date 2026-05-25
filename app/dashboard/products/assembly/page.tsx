@@ -290,7 +290,7 @@ function AssemblyFormContent() {
                       <button
                         type="button"
                         onClick={() => handleRemovePart(part.id)}
-                        disabled={assemblyParts.length === 1}
+                        disabled={assemblyParts.length <= 1 ? true : undefined}
                         className={cn(
                           "p-2 rounded-lg transition-colors",
                           assemblyParts.length === 1 

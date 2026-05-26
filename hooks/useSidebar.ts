@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { usePathname } from 'next/navigation';
 import {
- 
   Home, Package, Cpu, BarChart3, Wrench, List, Layers, Calculator, FileBarChart, Archive, DollarSign,
-  Boxes, ClipboardList, CheckSquare
+  Boxes, ClipboardList, CheckSquare, LayoutList
 } from 'lucide-react';
 
 export interface NavItem {
@@ -59,8 +58,15 @@ export const navItems: NavItem[] = [
     ],
   },
   {
-    label: 'Data Entry', icon: ClipboardList, href: '/dashboard/data-entry',
+    label: 'Forms', icon: LayoutList, href: '/dashboard/forms',
     adminOnly: true,
+    children: [
+      { label: 'Products',   href: '/dashboard/forms/products',   icon: Package     },
+      { label: 'Components', href: '/dashboard/forms/components', icon: Cpu         },
+      { label: 'Stock',      href: '/dashboard/forms/stock',      icon: Boxes       },
+      { label: 'Assembly',   href: '/dashboard/forms/assembly',   icon: Wrench      },
+      { label: 'Reports',    href: '/dashboard/forms/reports',    icon: FileBarChart },
+    ],
   },
 ];
 

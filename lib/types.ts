@@ -55,3 +55,9 @@ export interface ToastMessage {
   title: string;
   message?: string;
 }
+
+export enum Status {
+  inStock = 'in-stock',
+  lowStock = 'low-stock',
+  outOfStock = 'out-of-stock'
+}

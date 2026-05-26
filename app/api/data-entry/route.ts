@@ -12,7 +12,7 @@ const dataEntrySchema = z.object({
 export async function GET() {
   try {
     await connectToDatabase();
-    const entries = await DataEntryModel.find({}).sort({ createdAt: -1 }).lean();
+    const entries = await DataEntryModel.find().sort({ createdAt: -1 }).lean();
     
     const formatted = entries.map(e => ({
       id: e._id.toString(),
@@ -35,11 +35,12 @@ export async function POST(request: Request) {
     
     const parsed = dataEntrySchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
+      return NextResponse.json({ error: parsed.error.issues[0]?.message || 'Validation error' }, { status: 400 });
     }
     
     const { title, category, content } = parsed.data;
     const newEntry = await DataEntryModel.create({ title, category, content });
+    if (!newEntry) throw new Error("Failed to create data entry");
     
     return NextResponse.json({ success: true, id: newEntry._id });
   } catch (error: any) {

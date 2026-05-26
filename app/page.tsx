@@ -8,11 +8,12 @@ import {
   BarChart3, ShieldCheck, HardDrive, Star, ChevronRight, Cpu
 } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
+import { Status } from '@/lib/types';
 
 const orbitComponents = [
   {
     id: 'cpu', short: 'CPU', name: 'Intel Core i9-14900K',
-    icon: Cpu, stock: 42, status: 'in-stock' as const,
+    icon: Cpu, stock: 42, status: Status.inStock,
     dot: 'bg-emerald-500', iconColor: 'text-blue-500 dark:text-blue-400',
     ring: 'border-blue-200 dark:border-blue-500/40', bg: 'bg-blue-50 dark:bg-blue-500/10',
     desc: 'The brain of your build. AMS tracks CPU stock per location and alerts you before a build is blocked.',
@@ -20,7 +21,7 @@ const orbitComponents = [
   },
   {
     id: 'gpu', short: 'GPU', name: 'NVIDIA RTX 4090',
-    icon: Monitor, stock: 8, status: 'low-stock' as const,
+    icon: Monitor, stock: 8, status: Status.lowStock,
     dot: 'bg-amber-500', iconColor: 'text-purple-500 dark:text-purple-400',
     ring: 'border-purple-200 dark:border-purple-500/40', bg: 'bg-purple-50 dark:bg-purple-500/10',
     desc: 'Low stock warning! AMS flags this component and recalculates how many full units can still be assembled.',
@@ -28,7 +29,7 @@ const orbitComponents = [
   },
   {
     id: 'ram', short: 'RAM', name: 'DDR5 32GB Kit',
-    icon: Server, stock: 150, status: 'in-stock' as const,
+    icon: Server, stock: 150, status: Status.inStock,
     dot: 'bg-emerald-500', iconColor: 'text-emerald-500 dark:text-emerald-400',
     ring: 'border-emerald-200 dark:border-emerald-500/40', bg: 'bg-emerald-50 dark:bg-emerald-500/10',
     desc: 'Fully stocked. AMS ensures the BOM specifies the exact kit count needed and tracks kits, not sticks.',
@@ -36,7 +37,7 @@ const orbitComponents = [
   },
   {
     id: 'ssd', short: 'SSD', name: 'NVMe M.2 2TB',
-    icon: HardDrive, stock: 0, status: 'out-of-stock' as const,
+    icon: HardDrive, stock: 0, status: Status.outOfStock,
     dot: 'bg-red-500', iconColor: 'text-red-500 dark:text-red-400',
     ring: 'border-red-200 dark:border-red-500/40', bg: 'bg-red-50 dark:bg-red-500/10',
     desc: 'Out of stock — assembly halted. AMS prevents you from starting a build you cannot finish.',
@@ -44,7 +45,7 @@ const orbitComponents = [
   },
   {
     id: 'psu', short: 'PSU', name: '850W Gold PSU',
-    icon: Zap, stock: 35, status: 'in-stock' as const,
+    icon: Zap, stock: 35, status: Status.inStock,
     dot: 'bg-emerald-500', iconColor: 'text-amber-500 dark:text-amber-400',
     ring: 'border-amber-200 dark:border-amber-500/40', bg: 'bg-amber-50 dark:bg-amber-500/10',
     desc: 'Power supply stocked and matched to products via BOM. AMS validates wattage specs per product.',
@@ -52,7 +53,7 @@ const orbitComponents = [
   },
   {
     id: 'mobo', short: 'MOBO', name: 'Z790 Motherboard',
-    icon: Layers, stock: 22, status: 'in-stock' as const,
+    icon: Layers, stock: 22, status: Status.inStock,
     dot: 'bg-emerald-500', iconColor: 'text-indigo-500 dark:text-indigo-400',
     ring: 'border-indigo-200 dark:border-indigo-500/40', bg: 'bg-indigo-50 dark:bg-indigo-500/10',
     desc: 'The backbone of every build. AMS maps which products use this board and shows live build capacity.',
@@ -177,9 +178,9 @@ export default function WelcomePage() {
 
                 {/* Status row */}
                 <div className="flex items-center gap-3 mb-6">
-                  {comp.status === 'in-stock'     && <><CheckCircle2 size={16} className="text-emerald-500" /><span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">In Stock</span></>}
-                  {comp.status === 'low-stock'    && <><AlertCircle  size={16} className="text-amber-500"  /><span className="text-sm font-semibold text-amber-600 dark:text-amber-400">Low Stock — Alert Active</span></>}
-                  {comp.status === 'out-of-stock' && <><XCircle      size={16} className="text-red-500"    /><span className="text-sm font-semibold text-red-600 dark:text-red-400">Out of Stock — Assembly Halted</span></>}
+                  {comp.status === Status.inStock     && <><CheckCircle2 size={16} className="text-emerald-500" /><span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">In Stock</span></>}
+                  {comp.status === Status.lowStock    && <><AlertCircle  size={16} className="text-amber-500"  /><span className="text-sm font-semibold text-amber-600 dark:text-amber-400">Low Stock — Alert Active</span></>}
+                  {comp.status === Status.outOfStock && <><XCircle      size={16} className="text-red-500"    /><span className="text-sm font-semibold text-red-600 dark:text-red-400">Out of Stock — Assembly Halted</span></>}
                   <span className="ml-auto font-mono text-2xl font-extrabold text-foreground">{comp.stock}</span>
                   <span className="text-xs text-muted-foreground">units</span>
                 </div>
@@ -197,7 +198,7 @@ export default function WelcomePage() {
                   </div>
                 </div>
 
-                <Link href="/auth?mode=signup" className={buttonVariants({ className: `w-full rounded-xl h-11 text-white ${comp.status === 'out-of-stock' ? 'bg-red-600 hover:bg-red-700' : 'bg-indigo-600 hover:bg-indigo-700'}` })}>
+                <Link href="/auth?mode=signup" className={buttonVariants({ className: `w-full rounded-xl h-11 text-white ${comp.status === Status.outOfStock ? 'bg-red-600 hover:bg-red-700' : 'bg-indigo-600 hover:bg-indigo-700'}` })}>
                   Track This Component <ChevronRight size={16} className="ml-1" />
                 </Link>
               </div>

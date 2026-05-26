@@ -8,10 +8,10 @@ export async function GET() {
   try {
     await connectToDatabase();
     
-    const products = await ProductModel.find({}).lean();
-    const boms = await BOMEntryModel.find({}).lean();
-    const components = await ComponentModel.find({}).lean();
-    const inventory = await InventoryEntryModel.find({}).lean();
+    const products = await ProductModel.find().lean();
+    const boms = await BOMEntryModel.find().lean();
+    const components = await ComponentModel.find().lean();
+    const inventory = await InventoryEntryModel.find().lean();
 
     // Helper functions for backend calculation
     const getBOM = (prodId: string) => boms.filter(b => b.productId.toString() === prodId.toString());
@@ -100,12 +100,15 @@ export async function POST(request: Request) {
     // Server-side validation
     const parsed = productSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
+      return NextResponse.json({ error: parsed.error.issues[0]?.message || "Validation failed" }, { status: 400 });
     }
     
     const { name, description, price, assemblyParts } = parsed.data;
 
     const newProduct = await ProductModel.create({ name, description, price });
+    if (!newProduct) {
+      throw new Error("Failed to create product");
+    }
     
     if (assemblyParts && Array.isArray(assemblyParts)) {
       const bomsToCreate = assemblyParts.map((part: any) => ({
@@ -114,7 +117,7 @@ export async function POST(request: Request) {
         quantityRequired: part.quantity
       }));
       if (bomsToCreate.length > 0) {
-        await BOMEntryModel.insertMany(bomsToCreate);
+        await BOMEntryModel.insertMany(bomsToCreate as any);
       }
     }
 

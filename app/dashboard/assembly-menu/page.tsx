@@ -1,5 +1,6 @@
 import React from 'react';
 import { Wrench } from 'lucide-react';
+import SimpleForm from '@/components/SimpleForm';
 
 export default function Page() {
   return (
@@ -13,9 +14,7 @@ export default function Page() {
           <p className="text-sm text-muted-foreground mt-1">Select an option from the menu to continue.</p>
         </div>
       </div>
-      <div className="p-8 border border-border rounded-xl bg-card text-center text-muted-foreground">
-        This is the overview page for Assembly Menu. Use the navigation to access specific tools.
-      </div>
+      <SimpleForm title="Assembly" />
     </div>
   );
 }

@@ -6,8 +6,7 @@ export async function GET(request: Request, props: { params: Promise<{ id: strin
   const params = await props.params;
   try {
     await connectToDatabase();
-    // @ts-expect-error - Mongoose type issue
-    const component = await ComponentModel.findById(params.id).lean();
+    const component = await (ComponentModel as any).findById(params.id).lean();
     if (!component) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
     return NextResponse.json({
@@ -28,8 +27,7 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
     const body = await request.json();
     const { name, unit, description } = body;
 
-    // @ts-expect-error - Mongoose type issue
-    await ComponentModel.findByIdAndUpdate(params.id, { name, unit, description });
+    await (ComponentModel as any).updateOne({ _id: params.id }, { name, unit, description });
     return NextResponse.json({ success: true });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -40,12 +38,9 @@ export async function DELETE(request: Request, props: { params: Promise<{ id: st
   const params = await props.params;
   try {
     await connectToDatabase();
-    // @ts-expect-error - Mongoose type issue
-    await ComponentModel.findByIdAndDelete(params.id);
-    // @ts-expect-error - Mongoose type issue
-    await BOMEntryModel.deleteMany({ componentId: params.id });
-    // @ts-expect-error - Mongoose type issue
-    await InventoryEntryModel.deleteMany({ componentId: params.id });
+    await (ComponentModel as any).deleteOne({ _id: params.id });
+    await (BOMEntryModel as any).deleteMany({ componentId: params.id });
+    await (InventoryEntryModel as any).deleteMany({ componentId: params.id });
     return NextResponse.json({ success: true });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

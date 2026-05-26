@@ -5,7 +5,7 @@ import { ComponentModel } from '@/lib/models';
 export async function GET() {
   try {
     await connectToDatabase();
-    const components = await ComponentModel.find({}).lean();
+    const components = await ComponentModel.find().lean();
     const formatted = components.map(c => ({
       id: c._id.toString(),
       name: c.name,
@@ -34,12 +34,13 @@ export async function POST(request: Request) {
     // Server-side validation
     const parsed = componentSchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
+      return NextResponse.json({ error: parsed.error.issues[0]?.message || 'Validation error' }, { status: 400 });
     }
     
     const { name, unit, description } = parsed.data;
 
     const newComponent = await ComponentModel.create({ name, unit, description });
+    if (!newComponent) throw new Error("Failed to create component");
     return NextResponse.json({ success: true, id: newComponent._id });
   } catch (error: any) {
     return NextResponse.json({ error: error instanceof Error ? error.message : String(error) }, { status: 500 });

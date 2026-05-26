@@ -33,6 +33,7 @@ export function AssemblyFormModal({ open, onOpenChange, editId, onSuccess }: Pro
   const [price, setPrice] = React.useState('');
   const [error, setError] = React.useState('');
   const [componentsList, setComponentsList] = React.useState<any[]>([]);
+  const [inventoryList, setInventoryList] = React.useState<any[]>([]);
   const [productsList, setProductsList] = React.useState<any[]>([]);
   const [assemblyParts, setAssemblyParts] = React.useState([
     { id: 'temp-initial', componentId: '', quantity: 1 }
@@ -45,6 +46,11 @@ export function AssemblyFormModal({ open, onOpenChange, editId, onSuccess }: Pro
     fetch('/api/components')
       .then(r => r.json())
       .then(data => { if (Array.isArray(data)) setComponentsList(data); })
+      .catch(() => {});
+
+    fetch('/api/inventory')
+      .then(r => r.json())
+      .then(data => { if (Array.isArray(data)) setInventoryList(data); })
       .catch(() => {});
 
     fetch('/api/products')
@@ -79,6 +85,22 @@ export function AssemblyFormModal({ open, onOpenChange, editId, onSuccess }: Pro
       setAssemblyParts([{ id: generateId('temp'), componentId: '', quantity: 1 }]);
     }
   }, [open, editId]);
+
+  // Auto-calculate price when assembly parts change, if not admin or if creating new
+  React.useEffect(() => {
+    if (!isAdmin) {
+      let total = 0;
+      assemblyParts.forEach(part => {
+        if (part.componentId) {
+          const invItem = inventoryList.find(inv => inv.componentId === part.componentId);
+          if (invItem && invItem.unitPrice) {
+            total += invItem.unitPrice * Number(part.quantity || 0);
+          }
+        }
+      });
+      setPrice(total.toFixed(2));
+    }
+  }, [assemblyParts, inventoryList, isAdmin]);
 
   function handleAddPart() {
     setAssemblyParts(prev => [...prev, { id: generateId('temp'), componentId: '', quantity: 1 }]);
@@ -200,7 +222,11 @@ export function AssemblyFormModal({ open, onOpenChange, editId, onSuccess }: Pro
                   placeholder="0.00"
                   value={price}
                   onChange={e => { setPrice(e.target.value); setError(''); }}
-                  className="h-10 px-3 border border-border bg-background text-foreground rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 placeholder:text-slate-600"
+                  readOnly={!isAdmin}
+                  className={cn(
+                    "h-10 px-3 border border-border bg-background text-foreground rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 placeholder:text-slate-600",
+                    !isAdmin && "bg-muted/50 cursor-not-allowed"
+                  )}
                   required
                 />
               </div>

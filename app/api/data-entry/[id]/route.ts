@@ -10,7 +10,7 @@ export async function DELETE(
   try {
     await connectToDatabase();
     
-    const deleted = await DataEntryModel.findByIdAndDelete(params.id);
+    const deleted = await (DataEntryModel as any).deleteOne({ _id: params.id });
     
     if (!deleted) {
       return NextResponse.json({ error: 'Entry not found' }, { status: 404 });

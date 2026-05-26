@@ -5,8 +5,8 @@ import { InventoryEntryModel, ComponentModel } from '@/lib/models';
 export async function GET() {
   try {
     await connectToDatabase();
-    const inventory = await InventoryEntryModel.find({}).lean();
-    const components = await ComponentModel.find({}).lean();
+    const inventory = await InventoryEntryModel.find().lean();
+    const components = await ComponentModel.find().lean();
 
     const formatted = inventory.map(inv => {
       const component = components.find(c => c._id.toString() === inv.componentId.toString());
@@ -43,12 +43,13 @@ export async function POST(request: Request) {
     // Server-side validation
     const parsed = inventorySchema.safeParse(body);
     if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
+      return NextResponse.json({ error: parsed.error.issues[0]?.message || 'Validation error' }, { status: 400 });
     }
     
     const { componentId, workshopQty, storageQty, unitPrice } = parsed.data;
 
     const newInventory = await InventoryEntryModel.create({ componentId, workshopQty, storageQty, unitPrice });
+    if (!newInventory) throw new Error("Failed to create inventory entry");
     return NextResponse.json({ success: true, id: newInventory._id });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

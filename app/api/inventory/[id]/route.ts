@@ -9,7 +9,7 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
     const body = await request.json();
     const { componentId, workshopQty, storageQty, unitPrice } = body;
 
-    await InventoryEntryModel.findByIdAndUpdate(params.id, { componentId, workshopQty, storageQty, unitPrice });
+    await (InventoryEntryModel as any).updateOne({ _id: params.id }, { componentId, workshopQty, storageQty, unitPrice });
     return NextResponse.json({ success: true });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -20,7 +20,7 @@ export async function DELETE(request: Request, props: { params: Promise<{ id: st
   const params = await props.params;
   try {
     await connectToDatabase();
-    await InventoryEntryModel.findByIdAndDelete(params.id);
+    await (InventoryEntryModel as any).deleteOne({ _id: params.id });
     return NextResponse.json({ success: true });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

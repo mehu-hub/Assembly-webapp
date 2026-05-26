@@ -1,3 +1,4 @@
+// @ts-expect-error - Next.js font issue
 import { Geist } from 'next/font/google';
 import './globals.css';
 import * as React from 'react';
@@ -28,7 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
 
-      <body className="min-h-screen bg-background font-sans antialiased text-foreground">
+      <body className="min-h-screen bg-background font-sans antialiased text-foreground" suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

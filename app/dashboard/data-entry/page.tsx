@@ -1,15 +1,23 @@
 'use client';
 
 import * as React from 'react';
-import { ClipboardList, Save } from 'lucide-react';
+import { ClipboardList, Save, Plus } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { DeleteButton } from '@/components/ui/delete-button';
 import { Controller } from 'react-hook-form';
 import { useDataEntryManager } from '@/hooks/useDataEntryManager';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 export default function DataEntryPage() {
   const isAdmin = useIsAdmin();
+  const [isOpen, setIsOpen] = React.useState(false);
   const {
     entries,
     isLoading,
@@ -18,84 +26,101 @@ export default function DataEntryPage() {
     handleDelete
   } = useDataEntryManager();
 
+  const onSubmit = async (data: any) => {
+    await handleSave(data);
+    setIsOpen(false);
+  };
+
   return (
     <div className="relative z-10 flex flex-col gap-6 max-w-4xl mx-auto w-full">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <ClipboardList className="text-indigo-400" size={26} />
-            Data Entry Form
+            Data Entry System
           </h2>
-          <p className="text-sm text-muted-foreground mt-1">Submit new records using the generic data form.</p>
+          <p className="text-sm text-muted-foreground mt-1">Manage and view generic data records.</p>
         </div>
+        
+        {isAdmin && (
+          <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+              <button className="h-10 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap">
+                <Plus size={18} /> Add Data
+              </button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Add New Data Entry</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 mt-4">
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-semibold text-muted-foreground uppercase">Title</label>
+                  <Controller
+                    name="title"
+                    control={control}
+                    render={({ field }) => (
+                      <input 
+                        {...field}
+                        className={`h-10 px-3 border bg-background text-foreground rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${errors.title ? 'border-red-500/50' : 'border-border'}`} 
+                        placeholder="Enter title"
+                      />
+                    )}
+                  />
+                  {errors.title && <span className="text-[10px] text-red-400">{errors.title.message}</span>}
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-semibold text-muted-foreground uppercase">Category</label>
+                  <Controller
+                    name="category"
+                    control={control}
+                    render={({ field }) => (
+                      <select 
+                        {...field}
+                        className={`h-10 px-3 border bg-background text-foreground rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${errors.category ? 'border-red-500/50' : 'border-border'}`} 
+                      >
+                        <option value="" disabled>Select category...</option>
+                        <option value="hardware">Hardware</option>
+                        <option value="software">Software</option>
+                        <option value="services">Services</option>
+                      </select>
+                    )}
+                  />
+                  {errors.category && <span className="text-[10px] text-red-400">{errors.category.message}</span>}
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label className="text-xs font-semibold text-muted-foreground uppercase">Content</label>
+                  <Controller
+                    name="content"
+                    control={control}
+                    render={({ field }) => (
+                      <textarea 
+                        {...field}
+                        rows={4}
+                        className={`p-3 border bg-background text-foreground rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${errors.content ? 'border-red-500/50' : 'border-border'}`} 
+                        placeholder="Enter detailed content..."
+                      />
+                    )}
+                  />
+                  {errors.content && <span className="text-[10px] text-red-400">{errors.content.message}</span>}
+                </div>
+
+                <div className="flex justify-end mt-4">
+                  <button type="submit" className="h-10 px-6 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold shadow-sm transition-colors">
+                    <Save size={18} /> Submit Data
+                  </button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
-      <Card className="border-border shadow-sm bg-card overflow-hidden p-6">
-        {isAdmin && (
-          <form onSubmit={handleSubmit(handleSave)} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <label className="text-xs font-semibold text-muted-foreground uppercase">Title</label>
-              <Controller
-                name="title"
-                control={control}
-                render={({ field }) => (
-                  <input 
-                    {...field}
-                    className={`h-10 px-3 border bg-background text-foreground rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${errors.title ? 'border-red-500/50' : 'border-border'}`} 
-                    placeholder="Enter title"
-                  />
-                )}
-              />
-              {errors.title && <span className="text-[10px] text-red-400">{errors.title.message}</span>}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label className="text-xs font-semibold text-muted-foreground uppercase">Category</label>
-              <Controller
-                name="category"
-                control={control}
-                render={({ field }) => (
-                  <select 
-                    {...field}
-                    className={`h-10 px-3 border bg-background text-foreground rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${errors.category ? 'border-red-500/50' : 'border-border'}`} 
-                  >
-                    <option value="" disabled>Select category...</option>
-                    <option value="hardware">Hardware</option>
-                    <option value="software">Software</option>
-                    <option value="services">Services</option>
-                  </select>
-                )}
-              />
-              {errors.category && <span className="text-[10px] text-red-400">{errors.category.message}</span>}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label className="text-xs font-semibold text-muted-foreground uppercase">Content</label>
-              <Controller
-                name="content"
-                control={control}
-                render={({ field }) => (
-                  <textarea 
-                    {...field}
-                    rows={4}
-                    className={`p-3 border bg-background text-foreground rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 ${errors.content ? 'border-red-500/50' : 'border-border'}`} 
-                    placeholder="Enter detailed content..."
-                  />
-                )}
-              />
-              {errors.content && <span className="text-[10px] text-red-400">{errors.content.message}</span>}
-            </div>
-
-            <div className="flex justify-end mt-4">
-              <button type="submit" className="h-10 px-6 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold shadow-sm transition-colors">
-                <Save size={18} /> Submit Data
-              </button>
-            </div>
-          </form>
-        )}
-
+      <Card className="border-border shadow-sm bg-card overflow-hidden">
         {/* Entries List */}
-        <div className="mt-8 pt-8 border-t border-border">
+        <div className="p-6">
           <h3 className="text-lg font-semibold text-foreground mb-4">Submitted Data Entries</h3>
           {isLoading ? (
             <div className="py-8 text-center text-muted-foreground">Loading entries...</div>

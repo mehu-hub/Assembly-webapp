@@ -110,7 +110,7 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* scroll-behavior is set via data-scroll-behavior="smooth" on the <html> element per Next.js 16 */
 }
 
 body {

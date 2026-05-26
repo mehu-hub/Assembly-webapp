@@ -16,7 +16,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
+    <html lang="en" data-scroll-behavior="smooth" className={cn("font-sans", geist.variable)}>
       <head>
         <title>AMS - Assembly Management System</title>
         <meta name="description" content="Professional assembly management system for products, components, inventory, and assembly calculations." />

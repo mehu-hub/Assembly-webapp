@@ -27,26 +27,34 @@ export const navItems: NavItem[] = [
   {
     label: 'Components', icon: Cpu,
     children: [
-      { label: 'Component List',   href: '/dashboard/components',             icon: List },
-      { label: 'In Workshop',      href: '/dashboard/components/workshop',    icon: Wrench       },
-      { label: 'In Storage',       href: '/dashboard/components/storage',     icon: Archive      },
-      { label: 'Inventory',        href: '/dashboard/components/inventory',   icon: Boxes        },
+      { label: 'Component List',         href: '/dashboard/components',             icon: List },
+      { label: 'Components in Workshop', href: '/dashboard/components/workshop',    icon: Wrench       },
+      { label: 'Components in Storage',  href: '/dashboard/components/storage',     icon: Archive      },
+      { label: 'Component Inventory',    href: '/dashboard/components/inventory',   icon: Boxes        },
+    ],
+  },
+  {
+    label: 'Stock', icon: Boxes,
+    children: [
+      { label: 'Component Stock',  href: '/dashboard/stock/components', icon: Package    },
+      { label: 'Stock Quantities', href: '/dashboard/stock/quantities', icon: BarChart3  },
+      { label: 'Component Prices', href: '/dashboard/stock/prices',     icon: DollarSign },
     ],
   },
   {
     label: 'Assembly', icon: Wrench,
     children: [
-      { label: 'Required Components',       href: '/dashboard/assembly/required',   icon: ClipboardList },
-      { label: 'Products Assemblable',      href: '/dashboard/assembly/possible',   icon: CheckSquare   },
-      { label: 'Assembly Calculator',       href: '/dashboard/assembly/calculator', icon: Calculator    },
+      { label: 'Required Components',              href: '/dashboard/assembly/required',   icon: ClipboardList },
+      { label: 'Products That Can Be Assembled',   href: '/dashboard/assembly/possible',   icon: CheckSquare   },
+      { label: 'Assembly Calculator',              href: '/dashboard/assembly/calculator', icon: Calculator    },
     ],
   },
   {
     label: 'Reports', icon: FileBarChart,
     children: [
-      { label: 'Product Structure Report',   href: '/dashboard/reports',             icon: FileBarChart  },
-      { label: 'Inventory Report',           href: '/dashboard/reports/inventory',   icon: Boxes         },
-      { label: 'Assembly Possibility',       href: '/dashboard/reports/assembly',    icon: CheckSquare   },
+      { label: 'Product Structure Report',      href: '/dashboard/reports',             icon: FileBarChart  },
+      { label: 'Component Inventory Report',    href: '/dashboard/reports/inventory',   icon: Boxes         },
+      { label: 'Assembly Possibility Report',   href: '/dashboard/reports/assembly',    icon: CheckSquare   },
     ],
   },
 ];

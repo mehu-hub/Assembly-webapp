@@ -20,6 +20,8 @@ export default function WorkshopComponents() {
       .catch(() => setIsLoading(false));
   }, []);
 
+  const totalWorkshopItems = inventory.reduce((sum, item) => sum + (item.workshopQty || 0), 0);
+
   return (
     <div className="relative z-10 flex flex-col gap-6 max-w-4xl mx-auto w-full">
       <div className="flex items-center justify-between">
@@ -30,6 +32,18 @@ export default function WorkshopComponents() {
           </h2>
           <p className="text-sm text-slate-400 mt-1">View components currently available on the workshop floor.</p>
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
+        <Card className="md:col-span-1 border-white/6 bg-[#0f1117] p-5 flex items-center justify-between">
+          <div>
+            <p className="text-xs font-bold text-slate-500 uppercase mb-1">Total Items in Workshop</p>
+            <div className="text-3xl font-extrabold text-white">{totalWorkshopItems}</div>
+          </div>
+          <div className="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+            <Wrench size={24} />
+          </div>
+        </Card>
       </div>
 
       <Card className="border-white/6 shadow-sm bg-[#0f1117] overflow-hidden p-6">

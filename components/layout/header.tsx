@@ -17,41 +17,13 @@ import {
  
  
   CheckSquare, Calculator, BarChart3, ChevronDown,
-  Bell, Home as HomeIcon, ChevronRight, Hexagon, LogOut
+  HelpCircle, Home as HomeIcon, ChevronRight, Hexagon, LogOut
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 
 import { navItems, type NavItem } from '@/hooks/useSidebar';
 
-// ─── Route labels for breadcrumb ──────────────────────────────────────────────
-const routeLabels: Record<string, string> = {
-  '': 'Home', dashboard: 'Dashboard', products: 'Products',
-  structure: 'Structure', assembly: 'Assembly', components: 'Components',
-  workshop: 'Workshop', storage: 'Storage', inventory: 'Inventory',
-  stock: 'Stock', quantities: 'Quantities', prices: 'Prices',
-  required: 'Required', possible: 'Assemblable', calculator: 'Calculator',
-  reports: 'Reports',
-};
-
-function useBreadcrumbs() {
-  const pathname = usePathname();
-  const segments = pathname.split('/').filter(Boolean);
-  const crumbs: { label: string; href: string }[] = [];
-  let path = '';
-  for (const seg of segments) {
-    path += `/${seg}`;
-    crumbs.push({ label: routeLabels[seg] ?? seg, href: path });
-  }
-  return crumbs;
-}
-
-function getPageTitle(pathname: string): string {
-  const segments = pathname.split('/').filter(Boolean);
-  if (!segments.length) return 'Home';
-  const last = segments[segments.length - 1];
-  if (!last) return 'Home';
-  return routeLabels[last] ?? last;
-}
+// Breadcrumbs removed as requested
 
 function NavDropdown({ group }: { group: NavItem }) {
   const pathname = usePathname();
@@ -102,8 +74,6 @@ function NavDropdown({ group }: { group: NavItem }) {
 // ─── Main Header ──────────────────────────────────────────────────────────────
 export function Header({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
   const pathname = usePathname();
-  const crumbs = useBreadcrumbs();
-  const pageTitle = getPageTitle(pathname);
   const { user, logout } = useAuth();
 
   return (
@@ -161,37 +131,17 @@ export function Header({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
           </svg>
         </button>
 
-        {/* ── Right: Breadcrumb + divider + auth ── */}
+        {/* ── Right: Auth ── */}
         <div className="flex items-center gap-3 ml-auto flex-shrink-0">
 
-          {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" className="hidden md:flex items-center gap-1 text-sm">
-            <Link href="/" className="flex items-center justify-center w-7 h-7 rounded-md text-indigo-400 hover:bg-indigo-500/10 transition-colors" aria-label="Home">
-              <HomeIcon size={14} />
-            </Link>
-            {crumbs.map((crumb, i) => (
-              <React.Fragment key={crumb.href}>
-                <span className="text-slate-500">/</span>
-                {i === crumbs.length - 1 ? (
-                  <span className="text-slate-400 text-xs font-medium px-1">{crumb.label}</span>
-                ) : (
-                  <Link href={crumb.href} className="text-xs text-slate-400 hover:text-indigo-400 font-medium px-1 transition-colors">
-                    {crumb.label}
-                  </Link>
-                )}
-              </React.Fragment>
-            ))}
-          </nav>
 
-          <div className="hidden md:block w-px h-5 bg-white/8" />
 
           {/* Auth */}
           {user ? (
             <>
-              <button className="relative p-2 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-white/5 transition-colors" aria-label="Notifications">
-                <Bell size={17} />
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-red-500 ring-2 ring-[#0a0d14]" />
-              </button>
+              <Link href="/faq" className="p-2 rounded-lg text-slate-500 hover:text-indigo-400 hover:bg-white/5 transition-colors" aria-label="FAQ" title="FAQ">
+                <HelpCircle size={17} />
+              </Link>
               <button className="flex items-center gap-2 h-8 px-1 rounded-lg hover:bg-white/5 transition-colors" aria-label="Profile">
                 <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold uppercase shadow-sm">
                   {user.name[0]}

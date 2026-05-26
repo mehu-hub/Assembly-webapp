@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { Wrench, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +12,6 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { useAuth } from '@/lib/auth-context';
 
 function AuthForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode');
   const [isLogin, setIsLogin] = React.useState(true);

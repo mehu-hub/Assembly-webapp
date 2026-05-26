@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     setUser(authUser);
     localStorage.setItem('ams_user', JSON.stringify(authUser));
-    router.push('/');
+    router.push('/dashboard/products');
   };
 
   const signup = (email: string, password?: string, name?: string) => {
@@ -87,13 +87,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     setUser(authUser);
     localStorage.setItem('ams_user', JSON.stringify(authUser));
-    router.push('/');
+    router.push('/dashboard/products');
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem('ams_user');
-    router.push('/');
+    router.push('/auth');
   };
 
   return (

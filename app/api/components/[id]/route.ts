@@ -6,7 +6,7 @@ export async function GET(request: Request, props: { params: Promise<{ id: strin
   const params = await props.params;
   try {
     await connectToDatabase();
-    // @ts-ignore
+    // @ts-expect-error - Mongoose type issue
     const component = await ComponentModel.findById(params.id).lean();
     if (!component) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
@@ -28,7 +28,7 @@ export async function PUT(request: Request, props: { params: Promise<{ id: strin
     const body = await request.json();
     const { name, unit, description } = body;
 
-    // @ts-ignore
+    // @ts-expect-error - Mongoose type issue
     await ComponentModel.findByIdAndUpdate(params.id, { name, unit, description });
     return NextResponse.json({ success: true });
   } catch (error: any) {
@@ -40,11 +40,11 @@ export async function DELETE(request: Request, props: { params: Promise<{ id: st
   const params = await props.params;
   try {
     await connectToDatabase();
-    // @ts-ignore
+    // @ts-expect-error - Mongoose type issue
     await ComponentModel.findByIdAndDelete(params.id);
-    // @ts-ignore
+    // @ts-expect-error - Mongoose type issue
     await BOMEntryModel.deleteMany({ componentId: params.id });
-    // @ts-ignore
+    // @ts-expect-error - Mongoose type issue
     await InventoryEntryModel.deleteMany({ componentId: params.id });
     return NextResponse.json({ success: true });
   } catch (error: any) {

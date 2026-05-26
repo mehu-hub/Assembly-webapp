@@ -26,7 +26,7 @@ export default function MyOrdersPage() {
   const { user } = useAuth();
 
   // Filter orders to only show those belonging to the current user
-  const myOrders = orders.filter(o => o.userId === user?.id);
+  const myOrders = orders.filter(o => o.userId === user?.email);
 
   return (
     <div className="relative z-10 flex flex-col gap-6 max-w-5xl mx-auto w-full">

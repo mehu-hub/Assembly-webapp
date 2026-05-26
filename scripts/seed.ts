@@ -60,7 +60,7 @@ async function seed() {
       description: prod.description,
       price: prod.price
     });
-    productIdMap.set(prod.id, newProd._id);
+    productIdMap.set(prod.id, newProd?._id);
   }
 
   console.log('Inserting BOMs...');

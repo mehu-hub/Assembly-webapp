@@ -118,7 +118,7 @@ export async function POST(request: Request) {
       }
     }
 
-    return NextResponse.json({ success: true, id: newProduct._id });
+    return NextResponse.json({ success: true, id: newProduct?._id });
   } catch (error: any) {
     return NextResponse.json({ error: error instanceof Error ? error.message : String(error) }, { status: 500 });
   }

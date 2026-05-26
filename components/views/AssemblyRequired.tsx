@@ -47,7 +47,7 @@ export default function AssemblyRequired() {
             unit: bomItem.componentUnit
           };
         }
-        reqs[bomItem.componentId].required += bomItem.quantityRequired * item.qty;
+        reqs[bomItem.componentId]!.required += bomItem.quantityRequired * item.qty;
       });
     });
 

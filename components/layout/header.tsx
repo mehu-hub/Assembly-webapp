@@ -75,7 +75,7 @@ function NavDropdown({ group }: { group: NavItem }) {
 }
 
 // ─── Main Header ──────────────────────────────────────────────────────────────
-export function Header({ onMobileMenuOpen }: { onMobileMenuOpen: () => void }) {
+export function Header({ onMobileMenuOpen }: { onMobileMenuOpen?: () => void }) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const { items: cartItems, orders } = useCart();

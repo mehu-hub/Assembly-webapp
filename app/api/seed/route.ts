@@ -47,7 +47,7 @@ export async function POST() {
         description: prod.description,
         price: prod.price
       });
-      productIdMap.set(prod.id, newProd._id);
+      productIdMap.set(prod.id, newProd?._id);
     }
 
     for (const bom of bomEntries) {

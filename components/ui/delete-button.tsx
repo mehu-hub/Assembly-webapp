@@ -40,8 +40,8 @@ export function DeleteButton({ onConfirm, className }: DeleteButtonProps) {
       className={cn(
         "p-2 rounded-lg transition-all duration-300 flex items-center overflow-hidden",
         isConfirming 
-          ? "bg-red-500/20 text-red-400 border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.3)] animate-pulse" 
-          : "text-slate-500 hover:text-red-400 hover:bg-red-500/10",
+          ? "bg-red-200 dark:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.3)] animate-pulse" 
+          : "text-muted-foreground hover:text-red-600 dark:text-red-400 hover:bg-red-500/10",
         className
       )}
     >

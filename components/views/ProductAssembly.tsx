@@ -1,194 +1,113 @@
 'use client';
 
 import * as React from 'react';
-import { Plus, Trash2, Save, Wrench, AlertCircle, Package } from 'lucide-react';
+import { Wrench, Plus, Package, Layers, ShoppingCart } from 'lucide-react';
+import { AssemblyFormModal } from '@/components/AssemblyFormModal';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { Card } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
-import { useAssemblyForm } from '@/hooks/useAssemblyForm';
 
-export default function ProductAssemblyFormPage() {
-  return (
-    <React.Suspense fallback={<div>Loading...</div>}>
-      <AssemblyFormContent />
-    </React.Suspense>
-  );
-}
-
-function AssemblyFormContent() {
-  const {
-    editId,
-    productName,
-    setProductName,
-    price,
-    setPrice,
-    error,
-    setError,
-    componentsList,
-    assemblyParts,
-    handleAddPart,
-    handleRemovePart,
-    handlePartChange,
-    handleSubmit
-  } = useAssemblyForm();
+export default function ProductAssemblyPage() {
+  const isAdmin = useIsAdmin();
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const [refreshKey, setRefreshKey] = React.useState(0);
 
   return (
-    <div className="relative z-10 flex flex-col gap-6 max-w-4xl mx-auto w-full">
-      <div className="flex items-center gap-3">
-        <div className="w-12 h-12 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
-          <Wrench size={24} />
+    <div className="relative z-10 flex flex-col gap-8 max-w-4xl mx-auto w-full">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shadow-sm">
+            <Wrench size={24} />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-foreground">Product Assembly</h2>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              {isAdmin
+                ? 'Create and manage product assemblies with Bill of Materials.'
+                : 'Build a custom product assembly for purchase.'}
+            </p>
+          </div>
         </div>
-        <div>
-          <h2 className="text-2xl font-bold text-white">{editId ? 'Edit Product Assembly' : 'Create Product Assembly'}</h2>
-          <p className="text-sm text-slate-400">
-            {editId ? 'Update the details and components for this product.' : 'Define a new product and map out its required components (Bill of Materials).'}
-          </p>
-        </div>
+
+        <button
+          onClick={() => setModalOpen(true)}
+          className="flex items-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md shadow-indigo-900/40 transition-all active:scale-95 text-sm"
+        >
+          {isAdmin ? <Plus size={18} /> : <ShoppingCart size={18} />}
+          {isAdmin ? 'Create Assembly' : 'Assemble Products'}
+        </button>
       </div>
 
-      <Card className="border-white/6 shadow-sm bg-[#0f1117] overflow-hidden">
-        <form onSubmit={handleSubmit} className="p-6 sm:p-8 flex flex-col gap-8">
-          
-          {/* Error Banner */}
-          {error && (
-            <div className="flex items-center gap-3 px-4 py-3 bg-red-500/10 text-red-400 rounded-lg border border-red-500/20">
-              <AlertCircle size={18} className="flex-shrink-0 text-red-400" />
-              <p className="text-sm font-medium">{error}</p>
-            </div>
-          )}
-
-          {/* Product Details Section */}
-          <div className="flex flex-col gap-4">
-            <h3 className="text-base font-bold text-white flex items-center gap-2 border-b border-white/10 pb-2">
-              <Package size={18} className="text-slate-400" />
-              1. Product Details
-            </h3>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                  Product Name <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Oak Desk"
-                  value={productName}
-                  onChange={(e) => { setProductName(e.target.value); setError(''); }}
-                  className="h-10 px-3 border border-white/10 bg-[#0a0d14] text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 placeholder:text-slate-600"
-                  required
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                  Price (€) <span className="text-red-400">*</span>
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  placeholder="0.00"
-                  value={price}
-                  onChange={(e) => { setPrice(e.target.value); setError(''); }}
-                  className="h-10 px-3 border border-white/10 bg-[#0a0d14] text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 placeholder:text-slate-600"
-                  required
-                />
-              </div>
-            </div>
+      {/* Info cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Card className="border-border bg-card p-5 flex flex-col gap-3">
+          <div className="w-9 h-9 rounded-lg bg-indigo-100 dark:bg-indigo-500/10 flex items-center justify-center">
+            <Package size={18} className="text-indigo-400" />
           </div>
-
-          {/* Components Section */}
-          <div className="flex flex-col gap-4">
-            <h3 className="text-base font-bold text-white flex items-center gap-2 border-b border-white/10 pb-2">
-              <Wrench size={18} className="text-slate-400" />
-              2. Components (BOM)
-            </h3>
-            
-            <div className="bg-white/5 rounded-xl border border-white/10 p-4">
-              {/* Header row for larger screens */}
-              <div className="hidden sm:grid grid-cols-12 gap-4 mb-2 px-2">
-                <div className="col-span-8 text-xs font-semibold text-slate-400 uppercase">Component</div>
-                <div className="col-span-3 text-xs font-semibold text-slate-400 uppercase">Quantity</div>
-                <div className="col-span-1"></div>
-              </div>
-
-              <div className="flex flex-col gap-3">
-                {assemblyParts.map((part, idx) => (
-                  <div key={part.id} className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center bg-[#0a0d14] p-3 sm:p-2 rounded-lg border border-white/10 sm:border-transparent sm:bg-transparent shadow-sm sm:shadow-none">
-                    
-                    {/* Component Dropdown */}
-                    <div className="col-span-1 sm:col-span-8 flex flex-col sm:block gap-1">
-                      <label className="sm:hidden text-xs font-semibold text-slate-400">Component</label>
-                      <select
-                        value={part.componentId}
-                        onChange={(e) => handlePartChange(part.id, 'componentId', e.target.value)}
-                        className="w-full h-10 px-3 border border-white/10 bg-[#0f1117] text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-                        required
-                      >
-                        <option value="" disabled>Select a component...</option>
-                        {Array.isArray(componentsList) && componentsList.map((c) => (
-                          <option key={c.id} value={c.id}>
-                            {c.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    {/* Quantity */}
-                    <div className="col-span-1 sm:col-span-3 flex flex-col sm:block gap-1">
-                      <label className="sm:hidden text-xs font-semibold text-slate-400">Quantity</label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={part.quantity}
-                        onChange={(e) => handlePartChange(part.id, 'quantity', e.target.value)}
-                        className="w-full h-10 px-3 border border-white/10 bg-[#0f1117] text-white rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-                        required
-                      />
-                    </div>
-
-                    {/* Remove button */}
-                    <div className="col-span-1 sm:col-span-1 flex justify-end sm:justify-center">
-                      <button
-                        type="button"
-                        onClick={() => handleRemovePart(part.id)}
-                        disabled={assemblyParts.length <= 1 ? true : undefined}
-                        className={cn(
-                          "p-2 rounded-lg transition-colors",
-                          assemblyParts.length === 1 
-                            ? "text-slate-600 cursor-not-allowed" 
-                            : "text-slate-500 hover:text-red-400 hover:bg-red-500/10"
-                        )}
-                        title="Remove component"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                type="button"
-                onClick={handleAddPart}
-                className="mt-4 flex items-center gap-2 px-4 py-2 text-sm font-semibold text-indigo-400 bg-indigo-500/10 hover:bg-indigo-500/20 rounded-lg transition-colors border border-indigo-500/20"
-              >
-                <Plus size={16} />
-                Add Component
-              </button>
-            </div>
+          <div>
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Step 1</p>
+            <p className="text-sm font-semibold text-foreground mt-1">Name your product</p>
+            <p className="text-xs text-muted-foreground mt-1">Give the assembly a unique name and set its price.</p>
           </div>
+        </Card>
 
-          <div className="pt-4 border-t border-white/10 flex justify-end">
-            <button
-              type="submit"
-              className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold shadow-sm shadow-indigo-200 transition-all active:scale-95"
-            >
-              <Save size={18} />
-              {editId ? 'Save Changes' : 'Save Assembly'}
-            </button>
+        <Card className="border-border bg-card p-5 flex flex-col gap-3">
+          <div className="w-9 h-9 rounded-lg bg-purple-100 dark:bg-purple-500/10 flex items-center justify-center">
+            <Wrench size={18} className="text-purple-400" />
           </div>
-        </form>
-      </Card>
+          <div>
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Step 2</p>
+            <p className="text-sm font-semibold text-foreground mt-1">Add components</p>
+            <p className="text-xs text-muted-foreground mt-1">Pick components and quantities for the Bill of Materials.</p>
+          </div>
+        </Card>
+
+        <Card className="border-border bg-card p-5 flex flex-col gap-3">
+          <div className="w-9 h-9 rounded-lg bg-emerald-100 dark:bg-emerald-500/10 flex items-center justify-center">
+            <Layers size={18} className="text-emerald-400" />
+          </div>
+          <div>
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Step 3</p>
+            <p className="text-sm font-semibold text-foreground mt-1">{isAdmin ? 'Save to database' : 'Add to cart'}</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {isAdmin ? 'The product is stored and visible in the product list.' : 'The assembled product is added to your cart for checkout.'}
+            </p>
+          </div>
+        </Card>
+      </div>
+
+      {/* CTA banner */}
+      <div
+        className="relative flex flex-col sm:flex-row items-center justify-between gap-6 p-8 rounded-2xl border border-indigo-300 dark:border-indigo-500/20 bg-gradient-to-br from-indigo-600/10 to-purple-600/10 overflow-hidden cursor-pointer group"
+        onClick={() => setModalOpen(true)}
+      >
+        <div className="absolute -top-16 -right-16 w-48 h-48 bg-indigo-100 dark:bg-indigo-500/10 rounded-full blur-3xl group-hover:scale-150 transition-all duration-700 pointer-events-none" />
+        <div className="relative z-10">
+          <h3 className="text-xl font-bold text-foreground mb-1">
+            {isAdmin ? 'Ready to create a new assembly?' : 'Build your custom assembly'}
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            {isAdmin
+              ? 'Click to open the form and define a product with its BOM.'
+              : 'Click to configure your product and proceed to purchase.'}
+          </p>
+        </div>
+        <button
+          onClick={e => { e.stopPropagation(); setModalOpen(true); }}
+          className="relative z-10 flex-shrink-0 flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-900/50 transition-all active:scale-95 text-sm"
+        >
+          {isAdmin ? <Plus size={18} /> : <ShoppingCart size={18} />}
+          {isAdmin ? 'Open Assembly Form' : 'Assemble Products'}
+        </button>
+      </div>
+
+      {/* Modal */}
+      <AssemblyFormModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        editId={null}
+        onSuccess={() => setRefreshKey(k => k + 1)}
+      />
     </div>
   );
 }

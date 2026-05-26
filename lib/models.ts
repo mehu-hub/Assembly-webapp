@@ -77,3 +77,27 @@ export const ProductModel = mongoose.models.Product || mongoose.model<IProduct>(
 export const ComponentModel = mongoose.models.Component || mongoose.model<IComponent>('Component', ComponentSchema);
 export const BOMEntryModel = mongoose.models.BOMEntry || mongoose.model<IBOMEntry>('BOMEntry', BOMEntrySchema);
 export const InventoryEntryModel = mongoose.models.InventoryEntry || mongoose.model<IInventoryEntry>('InventoryEntry', InventoryEntrySchema);
+
+export interface IDataEntry extends Document {
+  id: string;
+  title: string;
+  category: string;
+  content: string;
+}
+
+const DataEntrySchema = new Schema({
+  title: { type: String, required: true },
+  category: { type: String, required: true },
+  content: { type: String, required: true }
+}, { timestamps: true });
+
+DataEntrySchema.set('toJSON', {
+  virtuals: true,
+  versionKey: false,
+  transform: function (doc, ret: any) {
+    ret.id = ret._id.toString();
+    delete ret._id;
+  }
+});
+
+export const DataEntryModel = mongoose.models.DataEntry || mongoose.model<IDataEntry>('DataEntry', DataEntrySchema);

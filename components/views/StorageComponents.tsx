@@ -26,43 +26,43 @@ export default function StorageComponents() {
     <div className="relative z-10 flex flex-col gap-6 max-w-4xl mx-auto w-full">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <Archive className="text-indigo-400" size={26} />
             Components in Storage
           </h2>
-          <p className="text-sm text-slate-400 mt-1">View components currently available in deep storage.</p>
+          <p className="text-sm text-muted-foreground mt-1">View components currently available in deep storage.</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
-        <Card className="md:col-span-1 border-white/6 bg-[#0f1117] p-5 flex items-center justify-between">
+        <Card className="md:col-span-1 border-border bg-card p-5 flex items-center justify-between">
           <div>
-            <p className="text-xs font-bold text-slate-500 uppercase mb-1">Total Items in Storage</p>
-            <div className="text-3xl font-extrabold text-white">{totalStorageItems}</div>
+            <p className="text-xs font-bold text-muted-foreground uppercase mb-1">Total Items in Storage</p>
+            <div className="text-3xl font-extrabold text-foreground">{totalStorageItems}</div>
           </div>
-          <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+          <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-500/10 flex items-center justify-center text-emerald-400">
             <Archive size={24} />
           </div>
         </Card>
       </div>
 
-      <Card className="border-white/6 shadow-sm bg-[#0f1117] overflow-hidden p-6">
+      <Card className="border-border shadow-sm bg-card overflow-hidden p-6">
         {isLoading ? (
-          <div className="py-8 text-center text-slate-500">Loading storage inventory...</div>
+          <div className="py-8 text-center text-muted-foreground">Loading storage inventory...</div>
         ) : inventory.length === 0 ? (
-          <div className="py-8 text-center text-slate-500 border border-dashed border-white/10 rounded-xl bg-white/5">
+          <div className="py-8 text-center text-muted-foreground border border-dashed border-border rounded-xl bg-muted">
             No components currently in storage.
           </div>
         ) : (
           <div className="flex flex-col gap-3">
             {inventory.map(inv => (
-              <div key={inv.id} className="flex items-center justify-between p-3 rounded-xl bg-[#0a0d14] border border-white/5 hover:border-indigo-500/30 transition-colors">
+              <div key={inv.id} className="flex items-center justify-between p-3 rounded-xl bg-background border border-border hover:border-indigo-500/30 transition-colors">
                 <div>
-                  <h4 className="text-sm font-bold text-slate-200">{inv.componentName}</h4>
+                  <h4 className="text-sm font-bold text-foreground">{inv.componentName}</h4>
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className="text-sm font-medium text-slate-400">
-                    Storage Qty: <span className="text-indigo-400 font-bold ml-1">{inv.storageQty}</span>
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Storage Qty: <span className="text-indigo-600 dark:text-indigo-400 font-bold ml-1">{inv.storageQty}</span>
                   </span>
                 </div>
               </div>

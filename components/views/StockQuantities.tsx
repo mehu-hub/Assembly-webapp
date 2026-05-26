@@ -34,30 +34,30 @@ export default function StockQuantities() {
   return (
     <div className="relative z-10 flex flex-col gap-6 max-w-5xl mx-auto w-full">
       <div className="flex items-center gap-3">
-        <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400 shadow-sm">
+        <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-sm">
           <BarChart3 size={24} />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-white">Stock Quantities</h2>
-          <p className="text-sm text-slate-400">
+          <h2 className="text-2xl font-bold text-foreground">Stock Quantities</h2>
+          <p className="text-sm text-muted-foreground">
             Detailed breakdown of component quantities in workshop vs storage.
           </p>
         </div>
       </div>
 
-      <Card className="border-white/6 bg-[#0f1117] overflow-hidden">
+      <Card className="border-border bg-card overflow-hidden">
         <div className="p-0 overflow-x-auto">
           {isLoading ? (
-            <div className="py-12 flex justify-center text-slate-500 text-sm">
+            <div className="py-12 flex justify-center text-muted-foreground text-sm">
               Loading quantity data...
             </div>
           ) : data.length === 0 ? (
-            <div className="py-12 flex justify-center text-slate-500 text-sm">
+            <div className="py-12 flex justify-center text-muted-foreground text-sm">
               No components found.
             </div>
           ) : (
             <table className="w-full text-sm text-left">
-              <thead className="bg-white/5 text-xs text-slate-400 uppercase font-semibold">
+              <thead className="bg-muted text-xs text-muted-foreground uppercase font-semibold">
                 <tr>
                   <th className="px-4 py-3">Component</th>
                   <th className="px-4 py-3 text-right">
@@ -78,11 +78,11 @@ export default function StockQuantities() {
               <tbody className="divide-y divide-white/5">
                 {data.map((item, i) => (
                   <tr key={i} className="hover:bg-white/2 transition-colors">
-                    <td className="px-4 py-3 font-medium text-slate-200">{item.name}</td>
-                    <td className="px-4 py-3 text-right text-indigo-400 font-bold">{item.workshopQty}</td>
-                    <td className="px-4 py-3 text-right text-emerald-400 font-bold">{item.storageQty}</td>
-                    <td className="px-4 py-3 text-right font-extrabold text-white">
-                      {item.totalQty} <span className="text-xs text-slate-500 ml-1 font-normal">{item.unit}</span>
+                    <td className="px-4 py-3 font-medium text-foreground">{item.name}</td>
+                    <td className="px-4 py-3 text-right text-indigo-600 dark:text-indigo-400 font-bold">{item.workshopQty}</td>
+                    <td className="px-4 py-3 text-right text-emerald-600 dark:text-emerald-400 font-bold">{item.storageQty}</td>
+                    <td className="px-4 py-3 text-right font-extrabold text-foreground">
+                      {item.totalQty} <span className="text-xs text-muted-foreground ml-1 font-normal">{item.unit}</span>
                     </td>
                   </tr>
                 ))}

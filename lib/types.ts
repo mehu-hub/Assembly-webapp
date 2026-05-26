@@ -42,9 +42,16 @@ export interface ComponentStockInfo {
   status: 'low' | 'warning' | 'ok';
 }
 
+export enum ToastStatus {
+  SUCCESS = 'success',
+  ERROR = 'error',
+  INFO = 'info',
+  WARNING = 'warning'
+}
+
 export interface ToastMessage {
   id: string;
-  type: 'success' | 'error' | 'info' | 'warning';
+  type: ToastStatus;
   title: string;
   message?: string;
 }

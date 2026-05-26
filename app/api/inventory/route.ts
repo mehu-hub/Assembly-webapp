@@ -26,11 +26,27 @@ export async function GET() {
   }
 }
 
+import { z } from 'zod';
+
+const inventorySchema = z.object({
+  componentId: z.string().min(1, "Component ID is required"),
+  workshopQty: z.coerce.number().min(0),
+  storageQty: z.coerce.number().min(0),
+  unitPrice: z.coerce.number().min(0)
+});
+
 export async function POST(request: Request) {
   try {
     await connectToDatabase();
     const body = await request.json();
-    const { componentId, workshopQty, storageQty, unitPrice } = body;
+    
+    // Server-side validation
+    const parsed = inventorySchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
+    }
+    
+    const { componentId, workshopQty, storageQty, unitPrice } = parsed.data;
 
     const newInventory = await InventoryEntryModel.create({ componentId, workshopQty, storageQty, unitPrice });
     return NextResponse.json({ success: true, id: newInventory._id });

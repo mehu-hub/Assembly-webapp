@@ -8,12 +8,12 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full bg-[#0a0d14] border-t border-white/6 mt-auto relative z-10">
+    <footer className="w-full bg-background border-t border-border mt-auto relative z-10">
       <div className="max-w-[1400px] mx-auto px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-6">
         
         {/* Left Side: Copyright Info */}
         <div className="order-3 md:order-1 text-center md:text-left">
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-muted-foreground">
             &copy; {currentYear} Mehedi Hasan. All rights reserved.
           </p>
         </div>
@@ -22,22 +22,22 @@ export function Footer() {
         <div className="order-1 md:order-2 flex justify-center">
           <Link href="/" className="flex items-center gap-2 group" aria-label="Home">
             <div className="relative w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-sm overflow-hidden">
-              <Hexagon className="absolute text-white/20 w-5 h-5 rotate-90" strokeWidth={1.5} />
-              <Cpu size={14} className="text-white relative z-10" />
+              <Hexagon className="absolute text-foreground/20 w-5 h-5 rotate-90" strokeWidth={1.5} />
+              <Cpu size={14} className="text-foreground relative z-10" />
             </div>
-            <span className="text-sm font-bold tracking-tight text-white">
-              AMS <span className="text-[10px] text-indigo-400 font-semibold uppercase tracking-wider ml-0.5">Assembly</span>
+            <span className="text-sm font-bold tracking-tight text-foreground">
+              AMS <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold uppercase tracking-wider ml-0.5">Assembly</span>
             </span>
           </Link>
         </div>
 
         {/* Right Side: Social Icons */}
-        <div className="order-2 md:order-3 flex items-center justify-center gap-5 text-slate-400">
+        <div className="order-2 md:order-3 flex items-center justify-center gap-5 text-muted-foreground">
           <a 
             href="https://github.com/mehu-hub" 
             target="_blank" 
             rel="noopener noreferrer" 
-            className="hover:text-indigo-400 hover:scale-110 transition-all duration-150" 
+            className="hover:text-indigo-600 dark:text-indigo-400 hover:scale-110 transition-all duration-150" 
             aria-label="GitHub"
           >
             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -48,7 +48,7 @@ export function Footer() {
             href="https://www.linkedin.com/in/mehedihasan-in/" 
             target="_blank" 
             rel="noopener noreferrer" 
-            className="hover:text-indigo-400 hover:scale-110 transition-all duration-150" 
+            className="hover:text-indigo-600 dark:text-indigo-400 hover:scale-110 transition-all duration-150" 
             aria-label="LinkedIn"
           >
             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
@@ -61,7 +61,7 @@ export function Footer() {
             href="https://www.facebook.com/mehedii.n.hasan/" 
             target="_blank" 
             rel="noopener noreferrer" 
-            className="hover:text-indigo-400 hover:scale-110 transition-all duration-150" 
+            className="hover:text-indigo-600 dark:text-indigo-400 hover:scale-110 transition-all duration-150" 
             aria-label="Facebook"
           >
             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">

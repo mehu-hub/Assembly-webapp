@@ -6,21 +6,23 @@ export function useProductStructure() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [deleteId, setDeleteId] = React.useState<string | null>(null);
 
-  React.useEffect(() => {
+  function fetchProducts() {
+    setIsLoading(true);
     fetch('/api/products')
       .then(res => res.json())
       .then(data => {
-        if (Array.isArray(data)) {
-          setLiveProducts(data);
-        } else {
-          setLiveProducts([]);
-        }
+        if (Array.isArray(data)) setLiveProducts(data);
+        else setLiveProducts([]);
         setIsLoading(false);
       })
       .catch(() => {
         setLiveProducts([]);
         setIsLoading(false);
       });
+  }
+
+  React.useEffect(() => {
+    fetchProducts();
   }, []);
 
   const filteredProducts = liveProducts.filter((p) =>
@@ -40,6 +42,7 @@ export function useProductStructure() {
     deleteId,
     setDeleteId,
     filteredProducts,
-    handleDelete
+    handleDelete,
+    reload: fetchProducts,
   };
 }

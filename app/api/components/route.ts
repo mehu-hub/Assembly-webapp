@@ -18,11 +18,26 @@ export async function GET() {
   }
 }
 
+import { z } from 'zod';
+
+const componentSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  unit: z.string().min(1, "Unit is required"),
+  description: z.string().optional()
+});
+
 export async function POST(request: Request) {
   try {
     await connectToDatabase();
     const body = await request.json();
-    const { name, unit, description } = body;
+    
+    // Server-side validation
+    const parsed = componentSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
+    }
+    
+    const { name, unit, description } = parsed.data;
 
     const newComponent = await ComponentModel.create({ name, unit, description });
     return NextResponse.json({ success: true, id: newComponent._id });

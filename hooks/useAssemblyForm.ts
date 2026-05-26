@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useToast } from '@/components/ui/toast';
 import { useSearchParams } from 'next/navigation';
+import { ToastStatus } from '@/lib/types';
 
 export function generateId(prefix: string) {
   return `${prefix}-` + String(Math.floor(Math.random() * 9000) + 1000);
@@ -120,7 +121,7 @@ export function useAssemblyForm() {
       }
 
       addToast({
-        type: 'success',
+        type: ToastStatus.SUCCESS,
         title: editId ? 'Assembly Updated' : 'Assembly Created',
         message: `${name} and its components have been saved successfully.`,
       });

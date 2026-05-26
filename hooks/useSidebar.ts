@@ -17,7 +17,7 @@ export interface NavItem {
 export const navItems: NavItem[] = [
   { label: 'Home', href: '/', icon: Home },
   {
-    label: 'Products', icon: Package,
+    label: 'Products', icon: Package, href: '/dashboard/products-menu',
     children: [
       { label: 'Product List',      href: '/dashboard/products',           icon: List       },
       { label: 'Product Structure', href: '/dashboard/products/structure', icon: Layers     },
@@ -25,7 +25,7 @@ export const navItems: NavItem[] = [
     ],
   },
   {
-    label: 'Components', icon: Cpu,
+    label: 'Components', icon: Cpu, href: '/dashboard/components-menu',
     children: [
       { label: 'Component List',         href: '/dashboard/components',             icon: List },
       { label: 'Components in Workshop', href: '/dashboard/components/workshop',    icon: Wrench       },
@@ -34,7 +34,7 @@ export const navItems: NavItem[] = [
     ],
   },
   {
-    label: 'Stock', icon: Boxes,
+    label: 'Stock', icon: Boxes, href: '/dashboard/stock-menu',
     children: [
       { label: 'Component Stock',  href: '/dashboard/stock/components', icon: Package    },
       { label: 'Stock Quantities', href: '/dashboard/stock/quantities', icon: BarChart3  },
@@ -42,7 +42,7 @@ export const navItems: NavItem[] = [
     ],
   },
   {
-    label: 'Assembly', icon: Wrench,
+    label: 'Assembly', icon: Wrench, href: '/dashboard/assembly-menu',
     children: [
       { label: 'Required Components',              href: '/dashboard/assembly/required',   icon: ClipboardList },
       { label: 'Products That Can Be Assembled',   href: '/dashboard/assembly/possible',   icon: CheckSquare   },
@@ -50,12 +50,17 @@ export const navItems: NavItem[] = [
     ],
   },
   {
-    label: 'Reports', icon: FileBarChart,
+    label: 'Reports', icon: FileBarChart, href: '/dashboard/reports-menu',
+    adminOnly: true,
     children: [
       { label: 'Product Structure Report',      href: '/dashboard/reports',             icon: FileBarChart  },
       { label: 'Component Inventory Report',    href: '/dashboard/reports/inventory',   icon: Boxes         },
       { label: 'Assembly Possibility Report',   href: '/dashboard/reports/assembly',    icon: CheckSquare   },
     ],
+  },
+  {
+    label: 'Data Entry', icon: ClipboardList, href: '/dashboard/data-entry',
+    adminOnly: true,
   },
 ];
 

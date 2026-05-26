@@ -80,11 +80,30 @@ export async function GET() {
   }
 }
 
+import { z } from 'zod';
+
+const productSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string().optional(),
+  price: z.coerce.number().min(0).optional(),
+  assemblyParts: z.array(z.object({
+    componentId: z.string(),
+    quantity: z.coerce.number().min(1)
+  })).optional()
+});
+
 export async function POST(request: Request) {
   try {
     await connectToDatabase();
     const body = await request.json();
-    const { name, description, price, assemblyParts } = body;
+    
+    // Server-side validation
+    const parsed = productSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
+    }
+    
+    const { name, description, price, assemblyParts } = parsed.data;
 
     const newProduct = await ProductModel.create({ name, description, price });
     

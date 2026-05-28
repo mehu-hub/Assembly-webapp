@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
+import { LocalizedLink as Link } from '@/components/LocalizedLink';
 import { Layers, ChevronRight, Search, Plus } from 'lucide-react';
 import { useProductStructure } from '@/hooks/useProductStructure';
 import { useIsAdmin } from '@/hooks/useIsAdmin';

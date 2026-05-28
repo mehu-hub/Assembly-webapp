@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Status } from '@/lib/types';
+import { useDictionary } from '@/components/DictionaryProvider';
 
 const orbitComponents = [
   {
@@ -62,6 +63,7 @@ const orbitComponents = [
 ];
 
 export default function WelcomePage() {
+  const dict = useDictionary();
   const [selected, setSelected] = React.useState(0);
   const comp = orbitComponents[selected];
   if (!comp) return null;
@@ -73,43 +75,34 @@ export default function WelcomePage() {
       <section className="relative pt-20 pb-20 overflow-hidden flex flex-col items-center text-center px-4">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none" />
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 rounded-full text-indigo-600 dark:text-indigo-400 text-xs font-bold uppercase tracking-wider mb-8">
-          <Zap size={13} className="text-amber-500" /> The Future of Manufacturing
+          <Zap size={13} className="text-amber-500" /> {dict?.home?.heroTagline || 'The Future of Manufacturing'}
         </div>
         <h1 className="text-5xl md:text-7xl font-extrabold text-foreground tracking-tight max-w-5xl mx-auto leading-[1.1] mb-6">
-          Assembly Management,{' '}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-500">Perfected.</span>
+          {dict?.home?.heroTitle1 || 'Assembly Management, '}{' '}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-500">
+            {dict?.home?.heroTitle2 || 'Perfected.'}
+          </span>
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-          Take full control of your hardware production. Track components, design multi-level BOMs, and calculate live assembly capacity — all in one place.
+          {dict?.home?.heroDesc || 'Take full control of your hardware production. Track components, design multi-level BOMs, and calculate live assembly capacity — all in one place.'}
         </p>
         <div className="flex flex-col sm:flex-row items-center gap-4 relative z-10">
           <Link href="/auth?mode=signup" className={buttonVariants({ size: 'lg', className: 'bg-indigo-600 hover:bg-indigo-700 text-white h-14 px-8 text-base shadow-xl shadow-indigo-600/20 transition-all hover:scale-105 active:scale-95 rounded-xl' })}>
-            Start Building for Free <ArrowRight className="ml-2 h-5 w-5" />
+            {dict?.home?.startFree || 'Start Building for Free'} <ArrowRight className="ml-2 h-5 w-5" />
           </Link>
           <Link href="/auth?mode=login" className={buttonVariants({ size: 'lg', variant: 'outline', className: 'h-14 px-8 text-base border-border hover:bg-muted text-foreground hover:scale-105 transition-all rounded-xl' })}>
-            Sign In to Dashboard
+            {dict?.home?.signInDash || 'Sign In to Dashboard'}
           </Link>
         </div>
       </section>
 
       {/* ── 2. ORBIT COMPONENT VISUALIZER ───────────────────────────── */}
       <section className="py-20 px-4 overflow-hidden">
-        <style>{`
-          @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-          @keyframes spin-slow-r { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
-          @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-          @keyframes ping-slow { 0% { transform:scale(1); opacity:.5; } 100% { transform:scale(1.7); opacity:0; } }
-          .ring-spin   { animation: spin-slow   24s linear infinite; }
-          .ring-spin-r { animation: spin-slow-r 18s linear infinite; }
-          .hub-float   { animation: float 4s ease-in-out infinite; }
-          .hub-ping    { animation: ping-slow 2.2s ease-out infinite; }
-        `}</style>
-
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mb-3">Every component. Fully tracked.</h2>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mb-3">{dict?.home?.orbitTitle || 'Every component. Fully tracked.'}</h2>
             <p className="text-muted-foreground text-base max-w-lg mx-auto">
-              Tap any part to see how AMS manages it — from stock levels to assembly capacity.
+              {dict?.home?.orbitDesc || 'Tap any part to see how AMS manages it — from stock levels to assembly capacity.'}
             </p>
           </div>
 
@@ -171,18 +164,18 @@ export default function WelcomePage() {
                     <comp.icon size={28} className={comp.iconColor} />
                   </div>
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Component</p>
+                    <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{dict?.home?.orbitComp || 'Component'}</p>
                     <h3 className="text-xl font-extrabold text-foreground">{comp.name}</h3>
                   </div>
                 </div>
 
                 {/* Status row */}
                 <div className="flex items-center gap-3 mb-6">
-                  {comp.status === Status.inStock     && <><CheckCircle2 size={16} className="text-emerald-500" /><span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">In Stock</span></>}
-                  {comp.status === Status.lowStock    && <><AlertCircle  size={16} className="text-amber-500"  /><span className="text-sm font-semibold text-amber-600 dark:text-amber-400">Low Stock — Alert Active</span></>}
-                  {comp.status === Status.outOfStock && <><XCircle      size={16} className="text-red-500"    /><span className="text-sm font-semibold text-red-600 dark:text-red-400">Out of Stock — Assembly Halted</span></>}
+                  {comp.status === Status.inStock     && <><CheckCircle2 size={16} className="text-emerald-500" /><span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">{dict?.home?.inStock || 'In Stock'}</span></>}
+                  {comp.status === Status.lowStock    && <><AlertCircle  size={16} className="text-amber-500"  /><span className="text-sm font-semibold text-amber-600 dark:text-amber-400">{dict?.home?.lowStock || 'Low Stock — Alert Active'}</span></>}
+                  {comp.status === Status.outOfStock && <><XCircle      size={16} className="text-red-500"    /><span className="text-sm font-semibold text-red-600 dark:text-red-400">{dict?.home?.outOfStock || 'Out of Stock — Assembly Halted'}</span></>}
                   <span className="ml-auto font-mono text-2xl font-extrabold text-foreground">{comp.stock}</span>
-                  <span className="text-xs text-muted-foreground">units</span>
+                  <span className="text-xs text-muted-foreground">{dict?.home?.units || 'units'}</span>
                 </div>
 
                 {/* Description */}
@@ -190,7 +183,7 @@ export default function WelcomePage() {
 
                 {/* Used in */}
                 <div className="mb-6">
-                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Used in Products</p>
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">{dict?.home?.usedIn || 'Used in Products'}</p>
                   <div className="flex flex-wrap gap-2">
                     {comp.usedIn.map(p => (
                       <span key={p} className="px-2.5 py-1 bg-background border border-border rounded-lg text-xs font-semibold text-foreground">{p}</span>
@@ -199,7 +192,7 @@ export default function WelcomePage() {
                 </div>
 
                 <Link href="/auth?mode=signup" className={buttonVariants({ className: `w-full rounded-xl h-11 text-white ${comp.status === Status.outOfStock ? 'bg-red-600 hover:bg-red-700' : 'bg-indigo-600 hover:bg-indigo-700'}` })}>
-                  Track This Component <ChevronRight size={16} className="ml-1" />
+                  {dict?.home?.trackComp || 'Track This Component'} <ChevronRight size={16} className="ml-1" />
                 </Link>
               </div>
             </div>
@@ -211,15 +204,15 @@ export default function WelcomePage() {
       <section className="py-20 border-t border-border bg-muted/30">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mb-3">Everything you need to ship faster</h2>
-            <p className="text-muted-foreground text-base max-w-lg mx-auto">Four powerful tools, one unified platform — built for hardware teams of every size.</p>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mb-3">{dict?.home?.featuresTitle || 'Everything you need to ship faster'}</h2>
+            <p className="text-muted-foreground text-base max-w-lg mx-auto">{dict?.home?.featuresDesc || 'Four powerful tools, one unified platform — built for hardware teams of every size.'}</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {[
-              { icon: Package, color: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-100 dark:bg-indigo-500/15', title: 'Product Management', desc: 'Define products with unlimited component depth. Your entire catalog, structured and searchable.' },
-              { icon: HardDrive, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-100 dark:bg-emerald-500/15', title: 'Inventory Tracking', desc: 'Monitor workshop and storage stock in real time. Get alerted before you run out — not after.' },
-              { icon: BarChart3, color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-100 dark:bg-purple-500/15', title: 'Manufacturing Reports', desc: 'Generate instant BOM reports, shortage summaries, and cost-of-goods data on demand.' },
-              { icon: ShieldCheck, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-100 dark:bg-amber-500/15', title: 'Role-Based Access', desc: 'Admins control orders and inventory. Users browse, order, and track — all with secure auth.' },
+              { icon: Package, color: 'text-indigo-600 dark:text-indigo-400', bg: 'bg-indigo-100 dark:bg-indigo-500/15', title: dict?.home?.f1Title || 'Product Management', desc: dict?.home?.f1Desc || 'Define products with unlimited component depth. Your entire catalog, structured and searchable.' },
+              { icon: HardDrive, color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-100 dark:bg-emerald-500/15', title: dict?.home?.f2Title || 'Inventory Tracking', desc: dict?.home?.f2Desc || 'Monitor workshop and storage stock in real time. Get alerted before you run out — not after.' },
+              { icon: BarChart3, color: 'text-purple-600 dark:text-purple-400', bg: 'bg-purple-100 dark:bg-purple-500/15', title: dict?.home?.f3Title || 'Manufacturing Reports', desc: dict?.home?.f3Desc || 'Generate instant BOM reports, shortage summaries, and cost-of-goods data on demand.' },
+              { icon: ShieldCheck, color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-100 dark:bg-amber-500/15', title: dict?.home?.f4Title || 'Role-Based Access', desc: dict?.home?.f4Desc || 'Admins control orders and inventory. Users browse, order, and track — all with secure auth.' },
             ].map((f, i) => (
               <div key={i} className="flex items-start gap-5 p-6 bg-card border border-border rounded-2xl hover:shadow-md transition-shadow duration-200 group">
                 <div className={`${f.bg} ${f.color} p-3 rounded-xl flex-shrink-0 group-hover:scale-110 transition-transform duration-200`}>
@@ -239,16 +232,16 @@ export default function WelcomePage() {
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mb-3">Up and running in three steps</h2>
-            <p className="text-muted-foreground text-base max-w-md mx-auto">No onboarding calls. No complex setup. Just log in and start managing.</p>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mb-3">{dict?.home?.stepsTitle || 'Up and running in three steps'}</h2>
+            <p className="text-muted-foreground text-base max-w-md mx-auto">{dict?.home?.stepsDesc || 'No onboarding calls. No complex setup. Just log in and start managing.'}</p>
           </div>
           <div className="relative">
             <div className="absolute left-7 top-8 bottom-8 w-px bg-gradient-to-b from-indigo-500/40 via-purple-500/20 to-transparent hidden sm:block" />
             <div className="flex flex-col gap-8">
               {[
-                { step: '01', title: 'Add your components', badge: 'Inventory', desc: 'Enter your raw parts — CPUs, resistors, frames, batteries — into the AMS inventory. Assign them to your workshop or storage locations.' },
-                { step: '02', title: 'Build your product structures', badge: 'Products', desc: 'Define which components go into each finished product. Create hierarchical BOMs that reflect exactly how your hardware is assembled.' },
-                { step: '03', title: 'Calculate, order & ship', badge: 'Assembly', desc: 'AMS tells you instantly how many units you can build. Users place orders; admins confirm them and stock adjusts automatically.' },
+                { step: '01', title: dict?.home?.step1Title || 'Add your components', badge: dict?.nav?.componentInventory || 'Inventory', desc: dict?.home?.step1Desc || 'Enter your raw parts — CPUs, resistors, frames, batteries — into the AMS inventory. Assign them to your workshop or storage locations.' },
+                { step: '02', title: dict?.home?.step2Title || 'Build your product structures', badge: dict?.nav?.products || 'Products', desc: dict?.home?.step2Desc || 'Define which components go into each finished product. Create hierarchical BOMs that reflect exactly how your hardware is assembled.' },
+                { step: '03', title: dict?.home?.step3Title || 'Calculate, order & ship', badge: dict?.nav?.assembly || 'Assembly', desc: dict?.home?.step3Desc || 'AMS tells you instantly how many units you can build. Users place orders; admins confirm them and stock adjusts automatically.' },
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-6 relative">
                   <div className="flex-shrink-0 w-14 h-14 bg-card border border-border rounded-2xl flex items-center justify-center shadow-sm z-10">
@@ -272,8 +265,8 @@ export default function WelcomePage() {
       <section className="py-20 border-t border-border bg-muted/30">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-14">
-            <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mb-3">Teams that build smarter</h2>
-            <p className="text-muted-foreground text-base max-w-md mx-auto">From startups to workshops — AMS helps teams eliminate waste and build with confidence.</p>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-foreground mb-3">{dict?.home?.testiTitle || 'Teams that build smarter'}</h2>
+            <p className="text-muted-foreground text-base max-w-md mx-auto">{dict?.home?.testiDesc || 'From startups to workshops — AMS helps teams eliminate waste and build with confidence.'}</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {[
@@ -305,18 +298,18 @@ export default function WelcomePage() {
             <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/20 rounded-full blur-[100px] pointer-events-none translate-y-1/3 -translate-x-1/3" />
             <div className="relative z-10">
               <h2 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-5 max-w-3xl mx-auto leading-tight">
-                Ready to take control of your{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">assembly line?</span>
+                {dict?.home?.ctaTitle1 || 'Ready to take control of your '}{' '}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">{dict?.home?.ctaTitle2 || 'assembly line?'}</span>
               </h2>
               <p className="text-slate-300 text-lg max-w-xl mx-auto mb-10 leading-relaxed">
-                Join manufacturing teams who have eliminated stock-outs, reduced errors, and started shipping faster with AMS.
+                {dict?.home?.ctaDesc || 'Join manufacturing teams who have eliminated stock-outs, reduced errors, and started shipping faster with AMS.'}
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link href="/auth?mode=signup" className={buttonVariants({ className: 'h-13 px-8 py-3.5 text-base bg-indigo-600 hover:bg-indigo-500 text-white border-0 rounded-xl shadow-xl shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95' })}>
-                  Create Your Free Account <ArrowRight className="ml-2 h-5 w-5" />
+                  {dict?.home?.ctaBtn || 'Create Your Free Account'} <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
                 <Link href="/auth?mode=login" className={buttonVariants({ variant: 'outline', className: 'h-13 px-8 py-3.5 text-base border-white/20 hover:bg-white/10 text-white bg-transparent rounded-xl transition-all hover:scale-105 active:scale-95' })}>
-                  Sign In to Dashboard
+                  {dict?.home?.signInDash || 'Sign In to Dashboard'}
                 </Link>
               </div>
             </div>

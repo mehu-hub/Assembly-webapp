@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Link from 'next/link';
+import { LocalizedLink as Link } from '@/components/LocalizedLink';
 import { Cpu, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 

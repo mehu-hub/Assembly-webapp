@@ -1,6 +1,6 @@
 // @ts-expect-error - Next.js font issue
 import { Geist } from 'next/font/google';
-import './globals.css';
+import '@/app/globals.css';
 import * as React from 'react';
 import { ToastProvider } from '@/components/ui/toast';
 import { Header } from '@/components/layout/header';
@@ -11,12 +11,25 @@ import { ThemeProvider } from '@/components/ThemeProvider';
 import { AuthGuard } from '@/components/AuthGuard';
 import { cn } from "@/lib/utils";
 
+import { DictionaryProvider } from '@/components/DictionaryProvider';
+import { getDictionary } from '@/lib/dictionary';
+import { Locale } from '@/lib/i18n';
+
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode;
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = await params;
+  const dictionary = await getDictionary(lang as Locale);
+
   return (
     <html
-      lang="en"
+      lang={lang}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
       className={cn("font-sans", geist.variable)}
@@ -30,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
 
       <body className="min-h-screen bg-background font-sans antialiased text-foreground" suppressHydrationWarning>
+        <DictionaryProvider dictionary={dictionary}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
@@ -61,6 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </CartProvider>
           </AuthProvider>
         </ThemeProvider>
+        </DictionaryProvider>
       </body>
     </html>
   );

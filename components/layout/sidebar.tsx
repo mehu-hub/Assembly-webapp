@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
+import { LocalizedLink as Link } from '@/components/LocalizedLink';
 import {
   Cpu, ChevronDown, ChevronRight,
   X, Menu, Hexagon, LogOut
@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/auth-context';
 import { useSidebar, type NavItem } from '@/hooks/useSidebar';
+import { useDictionary } from '@/components/DictionaryProvider';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 interface SidebarContentProps {
@@ -25,8 +26,8 @@ interface SidebarContentProps {
 
 // ─── Sidebar inner content (must live OUTSIDE of the Sidebar fn) ─────────────
 function SidebarContent({
-  user, logout, onMobileClose, expanded, setExpanded, toggleGroup, isActive, navItems
-}: SidebarContentProps) {
+  user, logout, onMobileClose, expanded, setExpanded, toggleGroup, isActive, navItems, dict
+}: SidebarContentProps & { dict: any }) {
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Logo */}
@@ -162,7 +163,7 @@ function SidebarContent({
             <p className="text-[10px] text-muted-foreground text-center mb-0.5">Sign in to access the dashboard</p>
             <Link href="/auth?mode=login" onClick={onMobileClose} className="w-full">
               <Button variant="outline" className="w-full h-8 text-xs border-border hover:bg-indigo-100 dark:bg-indigo-500/10 hover:border-indigo-500/30 text-muted-foreground">
-                Log In
+                {dict?.auth?.login || 'Log In'}
               </Button>
             </Link>
           </div>
@@ -180,7 +181,8 @@ interface SidebarProps {
 
 export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
   const { user, logout } = useAuth();
-  const { expanded, setExpanded, toggleGroup, isActive, navItems } = useSidebar();
+  const dict = useDictionary();
+  const { expanded, setExpanded, toggleGroup, isActive, navItems } = useSidebar(dict);
 
   // Hide sidebar entirely for unauthenticated visitors
   if (!user) return null;
@@ -196,7 +198,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
         className="hidden lg:flex flex-col w-[260px] flex-shrink-0 bg-background border-r border-border h-screen sticky top-0 overflow-hidden"
         style={{ boxShadow: '2px 0 12px 0 rgb(0 0 0 / 0.4)' }}
       >
-        <SidebarContent {...contentProps} />
+        <SidebarContent {...contentProps} dict={dict} />
       </aside>
 
       {/* Mobile overlay */}
@@ -204,7 +206,7 @@ export function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
         <div className="lg:hidden fixed inset-0 z-40">
           <div className="absolute inset-0 bg-black/50" onClick={onMobileClose} />
           <aside className="relative z-10 flex flex-col w-[260px] h-full bg-background shadow-2xl">
-            <SidebarContent {...contentProps} />
+            <SidebarContent {...contentProps} dict={dict} />
           </aside>
         </div>
       )}

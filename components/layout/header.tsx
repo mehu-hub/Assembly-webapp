@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
+import { LocalizedLink as Link } from '@/components/LocalizedLink';
 import { usePathname } from 'next/navigation';
 import {
  
@@ -23,7 +23,9 @@ import { useAuth } from '@/lib/auth-context';
 import { useCart } from '@/lib/cart-context';
 import { useTheme } from 'next-themes';
 
-import { navItems, type NavItem } from '@/hooks/useSidebar';
+import { getNavItems, type NavItem } from '@/hooks/useSidebar';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { useDictionary } from '@/components/DictionaryProvider';
 
 // Breadcrumbs removed as requested
 
@@ -80,6 +82,24 @@ export function Header({ onMobileMenuOpen }: { onMobileMenuOpen?: () => void }) 
   const { user, logout } = useAuth();
   const { items: cartItems, orders } = useCart();
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+  const [profileOpen, setProfileOpen] = React.useState(false);
+  const profileRef = React.useRef<HTMLDivElement>(null);
+  const dict = useDictionary();
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <header
@@ -118,10 +138,10 @@ export function Header({ onMobileMenuOpen }: { onMobileMenuOpen?: () => void }) 
                 ${pathname === '/' ? 'text-indigo-600 dark:text-indigo-400 bg-indigo-500/10' : 'text-muted-foreground hover:text-slate-100 hover:bg-muted'}`}
             >
               <HomeIcon size={15} />
-              Home
+              {dict?.nav?.home || 'Home'}
             </Link>
-            {navItems.map(group => {
-              if (group.label === 'Home') return null;
+            {getNavItems(dict).map(group => {
+              if (group.label === (dict?.nav?.home || 'Home') || group.label === 'Home') return null;
               if (group.adminOnly && user.role !== 'ADMIN') return null;
               return <NavDropdown key={group.label} group={group} />;
             })}
@@ -146,43 +166,13 @@ export function Header({ onMobileMenuOpen }: { onMobileMenuOpen?: () => void }) 
 
 
 
-          {user && user.role === 'ADMIN' && (
-            <Link
-              href="/dashboard/orders"
-              className="relative p-2 mr-1 rounded-lg text-muted-foreground hover:text-purple-600 dark:text-purple-400 hover:bg-muted transition-colors"
-              aria-label="Orders"
-              title="Customer Orders"
-            >
-              <ShoppingBag size={17} />
-              {orders.length > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-purple-500 text-white text-[9px] font-extrabold rounded-full flex items-center justify-center">
-                  {orders.length}
-                </span>
-              )}
-            </Link>
-          )}
 
-          {user && user.role !== 'ADMIN' && (
-            <>
-              <Link href="/dashboard/my-orders" className="relative p-2 mr-1 rounded-lg text-muted-foreground hover:text-purple-600 dark:text-purple-400 hover:bg-muted transition-colors" aria-label="My Orders" title="My Orders">
-                <ShoppingBag size={17} />
-              </Link>
-              <Link href="/dashboard/checkout" className="relative p-2 mr-1 rounded-lg text-muted-foreground hover:text-emerald-600 dark:text-emerald-400 hover:bg-muted transition-colors" aria-label="Cart" title="Cart">
-                <ShoppingCart size={17} />
-                {cartItems.length > 0 ? (
-                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-emerald-500 text-white text-[9px] font-extrabold rounded-full flex items-center justify-center">
-                    {cartItems.length}
-                  </span>
-                ) : (
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-emerald-500/40 rounded-full"></span>
-                )}
-              </Link>
-            </>
-          )}
 
-          <Link href="/faq" className="p-2 mr-1 rounded-lg text-slate-700 dark:text-slate-500 hover:text-indigo-600 dark:text-indigo-400 hover:bg-muted transition-colors" aria-label="FAQ" title="FAQ">
+          <Link href="/faq" className="hidden sm:flex p-2 mr-1 rounded-lg text-slate-700 dark:text-slate-500 hover:text-indigo-600 dark:text-indigo-400 hover:bg-muted transition-colors" aria-label="FAQ" title="FAQ">
             <HelpCircle size={17} />
           </Link>
+
+          <LanguageSwitcher />
 
           <button
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -190,35 +180,99 @@ export function Header({ onMobileMenuOpen }: { onMobileMenuOpen?: () => void }) 
             aria-label="Toggle theme"
             title="Toggle theme"
           >
-            {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+            {mounted ? (theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />) : <Moon size={17} />}
           </button>
 
           {/* Auth */}
           {user ? (
-            <>
-              <button className="flex items-center gap-2 h-8 px-1 rounded-lg hover:bg-muted transition-colors" aria-label="Profile">
+            <div className="relative" ref={profileRef}>
+              <button 
+                onClick={() => setProfileOpen(!profileOpen)}
+                className={`flex items-center gap-2 h-8 px-1 pr-2 rounded-lg transition-colors border border-transparent ${profileOpen ? 'bg-muted border-border shadow-sm' : 'hover:bg-muted'}`} 
+                aria-label="Profile"
+              >
                 <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold uppercase shadow-sm">
                   {user.name[0]}
                 </div>
-                <span className="hidden sm:block text-sm font-semibold text-muted-foreground pr-1">{user.name}</span>
+                <span className="hidden sm:block text-sm font-semibold text-foreground">{user.name}</span>
+                <svg className={`hidden sm:block w-4 h-4 text-muted-foreground transition-transform ${profileOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
               </button>
-              <div className="w-px h-4 bg-muted-hover mx-1 hidden sm:block" />
-              <button 
-                onClick={logout}
-                className="p-2 rounded-lg text-muted-foreground hover:text-red-600 dark:text-red-400 hover:bg-red-100 dark:bg-red-500/10 transition-colors"
-                aria-label="Sign out"
-                title="Sign out"
-              >
-                <LogOut size={17} />
-              </button>
-            </>
+
+              {/* Profile Dropdown */}
+              {profileOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-card border border-border shadow-lg rounded-xl z-50 overflow-hidden flex flex-col py-1 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="px-3 py-2 border-b border-border">
+                    <p className="text-sm font-bold text-foreground truncate">{user.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                  </div>
+                  
+                  <div className="py-1">
+                    {user.role === 'ADMIN' && (
+                      <Link
+                        href="/dashboard/orders"
+                        className="flex items-center justify-between px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                        onClick={() => setProfileOpen(false)}
+                      >
+                        <div className="flex items-center gap-2">
+                          <ShoppingBag size={16} className="text-purple-500" />
+                          <span>{dict?.nav?.orders || 'Orders'}</span>
+                        </div>
+                        {orders.length > 0 && (
+                          <span className="bg-purple-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                            {orders.length}
+                          </span>
+                        )}
+                      </Link>
+                    )}
+
+                    {user.role !== 'ADMIN' && (
+                      <>
+                        <Link 
+                          href="/dashboard/my-orders" 
+                          className="flex items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                          onClick={() => setProfileOpen(false)}
+                        >
+                          <ShoppingBag size={16} className="text-purple-500" />
+                          <span>{dict?.nav?.myOrders || 'My Orders'}</span>
+                        </Link>
+                        <Link 
+                          href="/dashboard/checkout" 
+                          className="flex items-center justify-between px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors"
+                          onClick={() => setProfileOpen(false)}
+                        >
+                          <div className="flex items-center gap-2">
+                            <ShoppingCart size={16} className="text-emerald-500" />
+                            <span>{dict?.nav?.cart || 'Cart'}</span>
+                          </div>
+                          {cartItems.length > 0 && (
+                            <span className="bg-emerald-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                              {cartItems.length}
+                            </span>
+                          )}
+                        </Link>
+                      </>
+                    )}
+                  </div>
+                  
+                  <div className="border-t border-border pt-1">
+                    <button 
+                      onClick={logout}
+                      className="flex items-center gap-2 w-full text-left px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/10 transition-colors"
+                    >
+                      <LogOut size={16} />
+                      <span>{dict?.auth?.logout || 'Sign Out'}</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           ) : (
             <>
               <Link href="/auth?mode=login" className="text-sm font-medium text-muted-foreground hover:text-indigo-600 dark:text-indigo-400 transition-colors px-3 py-1.5 rounded-lg hover:bg-muted">
-                Log in
+                {dict?.auth?.login || 'Log in'}
               </Link>
               <Link href="/auth?mode=signup" className="text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition-all px-4 py-1.5 rounded-lg shadow-sm shadow-indigo-900/50 active:scale-95">
-                Get Started
+                {dict?.auth?.signup || 'Get Started'}
               </Link>
             </>
           )}

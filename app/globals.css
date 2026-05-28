@@ -135,3 +135,14 @@ body {
     @apply font-sans;
   }
 }
+
+/* ── Orbit / home page animations ───────────────────────────────────── */
+@keyframes spin-slow   { from { transform: rotate(0deg); }   to { transform: rotate(360deg); } }
+@keyframes spin-slow-r { from { transform: rotate(0deg); }   to { transform: rotate(-360deg); } }
+@keyframes float       { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes ping-slow   { 0% { transform: scale(1); opacity: .5; } 100% { transform: scale(1.7); opacity: 0; } }
+
+.ring-spin   { animation: spin-slow   24s linear infinite; }
+.ring-spin-r { animation: spin-slow-r 18s linear infinite; }
+.hub-float   { animation: float 4s ease-in-out infinite; }
+.hub-ping    { animation: ping-slow 2.2s ease-out infinite; }

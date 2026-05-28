@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
+import { LocalizedLink as Link } from '@/components/LocalizedLink';
 import { useSearchParams } from 'next/navigation';
 import { Wrench, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,8 +10,10 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { useAuth } from '@/lib/auth-context';
+import { useDictionary } from '@/components/DictionaryProvider';
 
 function AuthForm() {
+  const dict = useDictionary();
   const searchParams = useSearchParams();
   const mode = searchParams.get('mode');
   const [isLogin, setIsLogin] = React.useState(true);
@@ -54,7 +56,7 @@ function AuthForm() {
             </div>
           </div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            {isLogin ? 'Welcome back' : 'Create an account'}
+            {isLogin ? (dict?.auth?.login || 'Welcome back') : (dict?.auth?.signup || 'Create an account')}
           </h1>
           <p className="text-muted-foreground mt-2 text-sm">
             {isLogin
@@ -81,7 +83,7 @@ function AuthForm() {
               )}
               {!isLogin && (
                 <div className="space-y-1.5">
-                  <Label htmlFor="name">Full Name</Label>
+                  <Label htmlFor="name">{dict?.common?.name || 'Full Name'}</Label>
                   <Input
                     id="name"
                     type="text"
@@ -93,7 +95,7 @@ function AuthForm() {
                 </div>
               )}
               <div className="space-y-1.5">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{dict?.auth?.email || 'Email'}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -105,7 +107,7 @@ function AuthForm() {
               </div>
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">{dict?.auth?.password || 'Password'}</Label>
                   {isLogin && (
                     <Link href="#" className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-300">
                       Forgot password?
@@ -124,7 +126,7 @@ function AuthForm() {
             </CardContent>
             <CardFooter className="pt-2">
               <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 h-10">
-                {isLogin ? 'Sign In' : 'Create Account'}
+                {isLogin ? (dict?.auth?.login || 'Sign In') : (dict?.auth?.signup || 'Create Account')}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardFooter>
